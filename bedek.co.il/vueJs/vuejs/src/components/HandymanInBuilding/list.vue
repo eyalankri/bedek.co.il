@@ -5,12 +5,14 @@
         </div>
         <div style="padding:5%">
         <vue-good-table
-  @on-selected-rows-change="selectionChanged"
-  :columns="columns"
-  :rows="rows"
-  :select-options="{ enabled: true }"
-  :search-options="{ enabled: true }">
-</vue-good-table>
+            @on-selected-rows-change="selectionChanged"
+            :columns="columns"
+            :rows="rows"
+            :select-options="{ enabled: true }"
+            :search-options="{ enabled: true }"
+            :row-style-class="rowStyleClassFn">
+            >
+          </vue-good-table>
 <!-- click on a row below to show the action button -->
   </div>
         </div>
@@ -58,7 +60,7 @@ export default {
         },
       ],
       rows: [
-        { id:1, name:"John", age: 20, createdAt: '',score: 0.03343 },
+        { id:1, name:"John", age: 20, createdAt: '2011-10-31',score: 0.03343 },
         { id:2, name:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
         { id:3, name:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
         { id:4, name:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
@@ -71,9 +73,28 @@ export default {
   mounted() {     
       this.loadBuilding();
       this.loadServiceInHandymanInBuilding();
+
       
+      this.rows.forEach(function(row){
+        if (row.name=='Dan') {
+          console.log(123123);
+          $('.clsRow_' + row.name).find('th.vgt-checkbox-col').click();  
+        }
+        
+      });
   }, 
   methods: {
+    rowStyleClassFn(row){
+       return row.name == 'Dan' ? 'clsRow_' + row.name : '';
+    },
+    selectionChanged(params){
+      var arr = params.selectedRows;
+      arr.forEach(function(element) {
+      console.log(element.name, element.age);
+});
+      
+       
+    },
     loadBuilding() {             
 
       axios
