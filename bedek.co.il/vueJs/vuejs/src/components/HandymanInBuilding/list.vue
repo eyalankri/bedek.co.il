@@ -74,6 +74,14 @@ export default {
       
   }, 
   methods: {
+    selectionChanged(params){
+      var arr = params.selectedRows;
+      arr.forEach(function(element) {
+      console.log(element.name, element.age);
+});
+      
+       
+    },
     loadBuilding() {             
 
       axios
