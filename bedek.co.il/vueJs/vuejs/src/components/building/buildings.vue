@@ -168,7 +168,7 @@ export default {
               el.street,
               el.buildingNumber,
               `<a href='${updateBuilding}'><i class="material-icons">edit</i></a>`,
-              `<a href='${handymanInBuilding}'><i class="material-icons">build</i></a>`,
+              `<a href='${handymanInBuilding}'><i class="material-icons">gavel</i></a>`,
               `<a href='${listApartment}'><i class="material-icons">home</i></a>`
             ]);
           });
@@ -189,7 +189,7 @@ export default {
           { title: "רחוב" },
           { title: "מספר" },
           { title: "עדכן" },
-          { title: "אנשי מקצוע" },
+          { title: "חוקי מכר" },
           { title: "דירות" }
         ],
         fixedColumns: true,
