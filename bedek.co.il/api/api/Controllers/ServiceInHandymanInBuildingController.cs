@@ -62,7 +62,8 @@ namespace api.Controllers
                                     LastName = (string)reader["LastName"],
                                     Company = reader["Company"] != DBNull.Value ? (string)reader["Company"] : "",
                                     ServiceName = (string)reader["ServiceName"],
-                                    BuildingId = reader["BuildingId"] != DBNull.Value ? (int?)reader["BuildingId"] : null,
+                                    ServiceId = (int)reader["ServiceId"],
+                                    IsAssociated = reader["BuildingId"] != DBNull.Value,
 
                                 //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
                                 //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
