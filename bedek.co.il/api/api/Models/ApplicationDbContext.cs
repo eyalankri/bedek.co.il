@@ -86,7 +86,7 @@ namespace api.Models
                     Phone1 = "054-6680240",
                     IsAcceptEmails = false,
                     DateRegistered = DateTime.Now,   
-                    IdentityCardId = 033913450
+                    IdentityCardId = "033913450"
 
                 });
 
@@ -113,7 +113,7 @@ namespace api.Models
                     Phone1 = "054-2446997",
                     IsAcceptEmails = false,
                     DateRegistered = DateTime.Now,
-                    IdentityCardId = 000000000
+                    IdentityCardId = "000000000"
 
                 });
 

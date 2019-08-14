@@ -35,7 +35,7 @@ namespace Api.Dtos
         
         public string Phone2 { get; set; }
 
-        public int IdentityCardId { get; set; }
+        public string IdentityCardId { get; set; }
         
         public bool IsAcceptEmails { get; set; }
 

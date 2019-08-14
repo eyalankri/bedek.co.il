@@ -13,7 +13,7 @@
         :row-style-class="rowStyleClassFn"
         :rtl="true"
       >
-        <div slot="emptystate">אין בניינים ברשימה</div>
+        <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
       </vue-good-table>
       <!-- click on a row below to show the action button -->
     </div>

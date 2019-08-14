@@ -24,7 +24,7 @@
           </div>
            
           <div class="input-field col s6 m4 l2">
-            <input id="identityCardId" type="number" v-model="identityCardId">
+            <input id="identityCardId" type="text" v-model="identityCardId">
             <label for="identityCardId">תעודת זהות</label>
           </div>
           <div class="input-field col s12 m6 6">

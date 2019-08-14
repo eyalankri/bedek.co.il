@@ -15,7 +15,7 @@
          styleClass="vgt-table condensed">
        
       
-        <div slot="emptystate">אין בניינים ברשימה</div>
+        <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
       </vue-good-table>
       
       <!-- click on a row below to show the action button -->
@@ -41,7 +41,6 @@ export default {
       projectName: null,
       city: null,
       
-
       columns: [
         {
           label: "חוק המכר",
@@ -75,12 +74,7 @@ export default {
   mounted() {
     this.loadBuilding();
     this.loadServiceInHandymanInBuilding();
-
-    this.rows.forEach(function(row) {
-      if (row.name == "Dan") {
-        $('.clsRow_Dan  input[type="checkbox"]').click();
-      }
-    });
+ 
   },
 
   methods: {
@@ -88,16 +82,30 @@ export default {
       return row.name == "Dan" ? "clsRow_" + row.name : "";
     },
     selectionChanged(params) {
-      var arr = params.selectedRows;
-
-      $(".chkSelected").prop("checked", false);
-
-      arr.forEach(function(el) {
-        //console.log(el.userId);
-
-        var chk = $("." + el.userId + "_" + el.serviceId);
-        $(chk).prop("checked", true);
+      var arrSelectedRows = params.selectedRows;
+      $(".chkSelected").prop("checked", false); // init un-check all
+     
+      arrSelectedRows.forEach(function(el) {      
+        var chkElm = $("." + el.userId + "_" + el.serviceId);
+        $(chkElm).prop("checked", true);
       });
+
+      axios
+        .post(
+          process.env.ROOT_API + "ServiceInHandymanInBuilding/Add?buildingId=" + this.buildingId,
+          arrSelectedRows,
+          this.$store.getters.getTokenHeaderFormData
+        )
+        .then(res => {
+          console.log(res);          
+       
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+
+
     },
     loadBuilding() {
       axios
@@ -110,9 +118,7 @@ export default {
           this.city = res.data.city;
           this.street = res.data.street;
           this.buildingNumber = res.data.buildingNumber;
-          this.$store.commit(
-            "setInfoBarText",
-            `שיוך אנשי מקצוע: ${this.projectName} ${this.buildingNumber} - ${this.city}`
+          this.$store.commit("setInfoBarText",`שיוך אנשי מקצוע: ${this.projectName} ${this.buildingNumber} - ${this.city}`
           );
         })
         .catch(error => {
@@ -131,9 +137,8 @@ export default {
         )
         .then(response => {
           response.data.forEach(el => {
-            el.isAssociated = `<input type="checkbox" ${
-              el.isAssociated ? "checked" : ""
-            } class="chkSelected ${el.userId}_${el.serviceId}"><span></span>`;
+            var isChecked = el.isAssociated ? "checked" : ""; 
+            el.isAssociated = `<input type="checkbox" ${isChecked} class="chkSelected ${el.userId}_${el.serviceId}"><span></span>`;
           });
 
           this.rows = response.data;

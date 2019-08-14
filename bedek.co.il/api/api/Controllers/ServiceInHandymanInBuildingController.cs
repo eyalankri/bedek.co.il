@@ -83,5 +83,33 @@ namespace api.Controllers
             return list;
 
         }
+
+
+
+        [HttpPost]
+        [Route("Update")]
+        public IActionResult Add([FromBody] List<ServiceInHandymanInBuildingDto> listDto , int buildingId)
+        {
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == buildingId));
+            _db.SaveChanges();
+
+
+            foreach (var dto in listDto)
+            {
+                var entity = _mapper.Map<ServiceInHandymanInBuilding>(dto);
+                _db.Add(entity);
+                _db.SaveChanges();
+               
+
+            }
+
+            return Ok();
+
+             
+
+        }
     }
 }

@@ -33,7 +33,8 @@ namespace api.Models
         [Column(TypeName = "varchar(20)")]
         public string Phone2 { get; set; }
 
-        public int IdentityCardId { get; set; }
+        [Column(TypeName = "varchar(20)")]
+        public string IdentityCardId { get; set; }
 
         [Required]
         public bool IsAcceptEmails { get; set; }

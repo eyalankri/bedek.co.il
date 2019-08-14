@@ -85,9 +85,18 @@ BEGIN
 END
 GO
 
+-----
 
 
-
-
-
-
+IF OBJECT_ID('[[ServiceInHandymanInBuilding_Delete_BuildingId]]', 'P') IS NOT NULL
+    DROP PROC [ServiceInHandymanInBuilding_Delete_BuildingId]
+GO
+CREATE PROCEDURE [dbo].[ServiceInHandymanInBuilding_Delete_BuildingId]
+	@BuildingId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	DELETE FROM ServiceInHandymanInBuilding WHERE BuildingId=@BuildingId
+	
+END

@@ -225,8 +225,8 @@ namespace api.Migrations
                     b.ToTable("User");
 
                     b.HasData(
-                        new { UserId = new Guid("c73633bc-f8df-4660-b3ed-51e9479df820"), DateRegistered = new DateTime(2019, 8, 11, 20, 3, 54, 83, DateTimeKind.Local), Email = "eyal.ank@gmail.com", FirstName = "Eyal", IdentityCardId = 33913450, IsAcceptEmails = false, IsDeleted = false, LastName = "Ankri", Password = "744fd6f1e1f3bc2d2a023c27f4bcc1a12523767d55de7508c0b21a160ab1fdbf", Phone1 = "054-6680240" },
-                        new { UserId = new Guid("c2fef337-4858-4c8b-899e-e6aacb2da339"), DateRegistered = new DateTime(2019, 8, 11, 20, 3, 54, 85, DateTimeKind.Local), Email = "carmelm@maozdaniel.co.il", FirstName = "Carmel", IdentityCardId = 0, IsAcceptEmails = false, IsDeleted = false, LastName = "Malca", Password = "d37d6f4d78542a3131bf5977d2ebb36346ff20bf0fc9365b0b7e28b1fbcdb89b", Phone1 = "054-2446997" }
+                        new { UserId = new Guid("c73633bc-f8df-4660-b3ed-51e9479df820"), DateRegistered = new DateTime(2019, 8, 11, 20, 3, 54, 83, DateTimeKind.Local), Email = "eyal.ank@gmail.com", FirstName = "Eyal", IdentityCardId = "33913450", IsAcceptEmails = false, IsDeleted = false, LastName = "Ankri", Password = "744fd6f1e1f3bc2d2a023c27f4bcc1a12523767d55de7508c0b21a160ab1fdbf", Phone1 = "054-6680240" },
+                        new { UserId = new Guid("c2fef337-4858-4c8b-899e-e6aacb2da339"), DateRegistered = new DateTime(2019, 8, 11, 20, 3, 54, 85, DateTimeKind.Local), Email = "carmelm@maozdaniel.co.il", FirstName = "Carmel", IdentityCardId = "000", IsAcceptEmails = false, IsDeleted = false, LastName = "Malca", Password = "d37d6f4d78542a3131bf5977d2ebb36346ff20bf0fc9365b0b7e28b1fbcdb89b", Phone1 = "054-2446997" }
                     );
                 });
 
