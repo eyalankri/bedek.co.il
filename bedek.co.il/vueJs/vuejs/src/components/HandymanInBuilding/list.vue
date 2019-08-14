@@ -62,6 +62,10 @@ export default {
           field: "userId",
           hidden: true
         },
+         {
+          field: "buildingId",
+          hidden: true
+        },
         {
           label: "בחר",
           field: "isAssociated",
@@ -85,16 +89,31 @@ export default {
       var arrSelectedRows = params.selectedRows;
       $(".chkSelected").prop("checked", false); // init un-check all
      
+     var listDto=[];
       arrSelectedRows.forEach(function(el) {      
         var chkElm = $("." + el.userId + "_" + el.serviceId);
         $(chkElm).prop("checked", true);
-      });
 
+       
+        var obj = {
+                    "UserId" : el.userId,
+                    "FirstName" : el.firstName,
+                    "LastName" : el.lastName,
+                    "ServiceName" : el.serviceName,
+                    "ServiceId" : el.serviceId,
+                    "Company" : el.company,
+                    "BuildingId" : el.buildingId
+                  }
+        listDto.push(obj);
+      });
+        console.log(listDto)
+      
       axios
         .post(
-          process.env.ROOT_API + "ServiceInHandymanInBuilding/Add?buildingId=" + this.buildingId,
-          arrSelectedRows,
-          this.$store.getters.getTokenHeaderFormData
+          process.env.ROOT_API + 
+          "ServiceInHandymanInBuilding/Update",
+          listDto,
+          this.$store.getters.getTokenHeader
         )
         .then(res => {
           console.log(res);          

@@ -11,7 +11,7 @@ namespace api.Dtos
         public int ServiceId { get; set; }
         public string Company { get; set; }
         public string InsertOrDelete { get; set; }
-        
+        public int BuildingId { get; set; }
         public bool IsAssociated { get; set; }
     }
 }

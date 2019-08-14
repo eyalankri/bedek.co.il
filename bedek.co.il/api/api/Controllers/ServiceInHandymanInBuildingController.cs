@@ -17,6 +17,7 @@ namespace api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+   
     public class ServiceInHandymanInBuildingController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -62,12 +63,13 @@ namespace api.Controllers
                                     LastName = (string)reader["LastName"],
                                     Company = reader["Company"] != DBNull.Value ? (string)reader["Company"] : "",
                                     ServiceName = (string)reader["ServiceName"],
-                                    ServiceId = (int)reader["ServiceId"],
-                                    IsAssociated = reader["BuildingId"] != DBNull.Value,
+                                    ServiceId = (int)reader["ServiceId"],                                    
+                                    BuildingId = buildingId,
+                                    IsAssociated = reader["BuildingId"] != DBNull.Value
 
-                                //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
-                                //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
-                            });
+                                    //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
+                                    //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
+                                });
 
                             }
                         }
@@ -88,17 +90,21 @@ namespace api.Controllers
 
         [HttpPost]
         [Route("Update")]
-        public IActionResult Add([FromBody] List<ServiceInHandymanInBuildingDto> listDto , int buildingId)
+        [EnableCors("MyPolicy")]
+        public IActionResult Update([FromBody] ServiceInHandymanInBuildingDto[] listDto )
         {
 
             if (!ModelState.IsValid) return BadRequest();
 
-            _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == buildingId));
-            _db.SaveChanges();
+          
 
 
             foreach (var dto in listDto)
             {
+
+                _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == dto.BuildingId && x.ServiceId==dto.ServiceId && x.UserId==dto.UserId));
+                _db.SaveChanges();
+
                 var entity = _mapper.Map<ServiceInHandymanInBuilding>(dto);
                 _db.Add(entity);
                 _db.SaveChanges();
