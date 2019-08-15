@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { stat } from 'fs';
-
 Vue.use(Vuex);
 
 
@@ -11,17 +10,22 @@ export const store = new Vuex.Store({
         tokenHeader: null,
         apartmentComment:null,
         apiUrl: null,
-        products: [ // example!
-            { name: 'banana', price: 20 },
-            { name: 'banana2', price: 30 },
-        ],
+        loggedInUser: null
+        
     },
+
     mutations: {
+        // SET:  this.$store.commit('setApartmentComment', data)            
+        // GET:  this.$store.state.apartmentComment,
         setInfoBarText(state, text) {            
             state.infoBarText = text;
         },
         setApartmentComment(state, html) { 
             state.apartmentComment = html;
+        },
+        setLoggedInUser(state, email) { 
+             
+            state.loggedInUser = email;
         }
 
     },
@@ -34,15 +38,7 @@ export const store = new Vuex.Store({
            // return  "https://localhost:44349/api/"                        
             return ""; // moved to dev/prod.env.js
         },        
-        saleProducts: state => {
-            var saleProducts = state.products.map(prod => {
-                return {
-                    name: '**' + prod.name,
-                    price: prod.price * 0.9
-                }
-            });
-            return saleProducts;
-        },
+        
         getTokenHeader: state => {
             var token = localStorage.getItem("user-token");
             return {

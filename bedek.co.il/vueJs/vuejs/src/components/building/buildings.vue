@@ -45,8 +45,19 @@
         <i class="material-icons" v-if="expandMoreList">expand_more</i>
         <i class="material-icons" v-if="!expandMoreList">expand_less</i>
       </div>
-      <div v-show="expandMoreList" class="material-table">
-        <table id="buildings" class="mdl-data-table" width="100%"></table>
+      <div v-show="expandMoreList">
+        <vue-good-table
+          :columns="columns"
+          :rows="rows"
+          :rtl="true"
+          :search-options="{ 
+          enabled: true,
+           placeholder: ' חפש בטבלה ', 
+          }"
+          styleClass="vgt-table condensed"
+        >
+          <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
+        </vue-good-table>
       </div>
     </div>
     <!-- /list-buildings -->
@@ -58,10 +69,12 @@
 
 <script>
 import axios from "axios";
+import "vue-good-table/dist/vue-good-table.css";
+import { VueGoodTable } from "vue-good-table";
 
 export default {
   name: "buildings",
-
+  components: { VueGoodTable },
   data() {
     return {
       expandMoreAdd: false,
@@ -74,7 +87,47 @@ export default {
       buildingId: null,
       newBuilding: [],
       buildings: [],
-      dataset: []
+       
+
+      rows: [],
+      columns: [
+        {
+          label: "Id",
+          field: "buildingId"
+        },
+        {
+          label: "פרוייקט",
+          field: "projectName"
+        },
+        {
+          label: "עיר",
+          field: "city"
+        },
+        {
+          label: "רחוב",
+          field: "street"
+        },
+        {
+          label: "מספר",
+          field: "buildingNumber",
+          type: "numer"
+        },
+        {
+          label: "עדכן",
+          field: "updateBuilding",
+          html: true
+        },
+        {
+          label: "חוקי מכר",
+          field: "serviceInHandymanInBuilding",
+          html: true
+        },
+        {
+          label: "דירות",
+          field: "listApartment",
+          html: true
+        }
+      ]
     };
   },
   mounted() {
@@ -120,7 +173,6 @@ export default {
           this.$store.getters.getTokenHeader
         )
         .then(res => {
-                               
           this.city = null;
           this.street = null;
           this.buildingNumber = null;
@@ -129,7 +181,6 @@ export default {
           var table = $("#buildings").DataTable();
           table.destroy(); // must destroy before calling again
           this.listBuildings();
-           
         })
         .catch(error => {
           this.$router.push({
@@ -145,35 +196,30 @@ export default {
         )
         .then(response => {
           response.data.forEach(el => {
-            
-            var updateBuilding = this.$router.resolve({
+            let link = "";
+            link = this.$router.resolve({
               name: "updateBuilding",
               params: { buildingId: el.buildingId }
             }).href;
+            el.updateBuilding = `<a href='${link}'><i class="material-icons">edit</i></a>`;
 
-            var listApartment = this.$router.resolve({
+            link = this.$router.resolve({
               name: "listApartment",
               params: { id: el.buildingId }
             }).href;
+            el.listApartment = `<a href='${link}'><i class="material-icons">home</i></a>`;
 
-            var handymanInBuilding = this.$router.resolve({
+            link = this.$router.resolve({
               name: "handymanInBuilding",
               params: { buildingId: el.buildingId }
             }).href;
-
-            this.dataset.push([
-              el.buildingId,
-              el.projectName,
-              el.city,
-              el.street,
-              el.buildingNumber,
-              `<a href='${updateBuilding}'><i class="material-icons">edit</i></a>`,
-              `<a href='${handymanInBuilding}'><i class="material-icons">gavel</i></a>`,
-              `<a href='${listApartment}'><i class="material-icons">home</i></a>`
-            ]);
+             el.serviceInHandymanInBuilding = `<a href='${link}'><i class="material-icons">gavel</i></a>`;
           });
+         
 
-          this.initializeDataTable();
+          this.rows = response.data;
+
+          //  this.initializeDataTable();
         })
         .catch(error => {
           console.log(error);

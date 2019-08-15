@@ -4,8 +4,8 @@
 }
 
 
-
-.material-table{overflow: scroll}
+a{color:#8178ff}
+ 
 .mdl-data-table{min-width: 500px;}
 
 .title-container {
@@ -288,5 +288,8 @@ div.dt-button-info {
   div.dt-buttons {
     float: none !important;
     text-align: center;
+  }
+  .material-table {
+    overflow: scroll;
   }
 }

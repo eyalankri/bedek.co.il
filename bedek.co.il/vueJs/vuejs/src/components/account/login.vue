@@ -68,6 +68,7 @@ export default {
           // store the token
           this.token = response.data.token;        
           localStorage.setItem("user-token", this.token);
+          this.$store.commit('setLoggedInUser', this.email)    
 
            $('.navbar').show();
            

@@ -31,6 +31,7 @@
               <li v-if="!user">
                 <router-link :to="{name: 'Login'}">התחבר</router-link>
               </li>
+               
               <li v-if="user">
                 <a href="javascript:;" @click="logout">התנתק</a>
               </li>
@@ -50,7 +51,7 @@ export default {
   name: "Navbar",
   data() {
     return {
-      user: { email: "eyal.ank@gmail.com" }
+      user: { email: this.$store.state.loggedInUser  }
     };
   },
   created() {

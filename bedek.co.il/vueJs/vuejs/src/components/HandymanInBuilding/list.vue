@@ -1,27 +1,24 @@
 <template>
   <div class="ServiceInHandymanInBuilding">
     <div class="container">
-     
       <vue-good-table
         @on-selected-rows-change="selectionChanged"
+         
         :columns="columns"
         :rows="rows"
         :select-options="{ enabled: true }"
         :search-options="{ 
           enabled: true,
            placeholder: ' חפש בטבלה ', 
-          }"        
+          }"
         :rtl="true"
-         styleClass="vgt-table condensed">
-       
-      
+        styleClass="vgt-table condensed"
+      >
         <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
       </vue-good-table>
-      
+
       <!-- click on a row below to show the action button -->
     </div>
-    </div>
-    
   </div>
 </template>
 
@@ -40,7 +37,7 @@ export default {
       buildingNumber: null,
       projectName: null,
       city: null,
-      
+      rows: [],
       columns: [
         {
           label: "חוק המכר",
@@ -62,7 +59,7 @@ export default {
           field: "userId",
           hidden: true
         },
-         {
+        {
           field: "buildingId",
           hidden: true
         },
@@ -71,14 +68,22 @@ export default {
           field: "isAssociated",
           html: true
         }
-      ],
-      rows: []
+      ]
     };
   },
   mounted() {
     this.loadBuilding();
     this.loadServiceInHandymanInBuilding();
- 
+    console.log(this.rows)
+    this.rows.forEach(function(row){
+        console.log(row);
+
+      });
+  },
+   beforeDestroy(){
+   $('.chkSelected').each(function(){
+      console.log($(this));
+    });
   },
 
   methods: {
@@ -88,43 +93,37 @@ export default {
     selectionChanged(params) {
       var arrSelectedRows = params.selectedRows;
       $(".chkSelected").prop("checked", false); // init un-check all
-     
-     var listDto=[];
-      arrSelectedRows.forEach(function(el) {      
+
+      var listDto = [];
+      arrSelectedRows.forEach(function(el) {
         var chkElm = $("." + el.userId + "_" + el.serviceId);
         $(chkElm).prop("checked", true);
-
        
+
         var obj = {
-                    "UserId" : el.userId,
-                    "FirstName" : el.firstName,
-                    "LastName" : el.lastName,
-                    "ServiceName" : el.serviceName,
-                    "ServiceId" : el.serviceId,
-                    "Company" : el.company,
-                    "BuildingId" : el.buildingId
-                  }
+          UserId: el.userId,
+          FirstName: el.firstName,
+          LastName: el.lastName,
+          ServiceName: el.serviceName,
+          ServiceId: el.serviceId,
+          Company: el.company,
+          BuildingId: el.buildingId
+        };
         listDto.push(obj);
       });
-        console.log(listDto)
-      
+
       axios
         .post(
-          process.env.ROOT_API + 
-          "ServiceInHandymanInBuilding/Update",
+          process.env.ROOT_API + "ServiceInHandymanInBuilding/Update",
           listDto,
           this.$store.getters.getTokenHeader
         )
         .then(res => {
-          console.log(res);          
-       
+          console.log(res);
         })
         .catch(error => {
           console.log(error);
         });
-
-
-
     },
     loadBuilding() {
       axios
@@ -137,7 +136,9 @@ export default {
           this.city = res.data.city;
           this.street = res.data.street;
           this.buildingNumber = res.data.buildingNumber;
-          this.$store.commit("setInfoBarText",`שיוך אנשי מקצוע: ${this.projectName} ${this.buildingNumber} - ${this.city}`
+          this.$store.commit(
+            "setInfoBarText",
+            `שיוך חוקי מכר לבניין: ${this.projectName} ${this.buildingNumber} - ${this.city}`
           );
         })
         .catch(error => {
@@ -156,18 +157,19 @@ export default {
         )
         .then(response => {
           response.data.forEach(el => {
-            var isChecked = el.isAssociated ? "checked" : ""; 
+            var isChecked = el.isAssociated ? "checked" : "";
             el.isAssociated = `<input type="checkbox" ${isChecked} class="chkSelected ${el.userId}_${el.serviceId}"><span></span>`;
           });
 
           this.rows = response.data;
+
         })
         .catch(error => {
           console.log("loadBuildingInfo: " + error);
         });
     }
-  }
-};
+  },  
+}
 </script>
 
 <style>

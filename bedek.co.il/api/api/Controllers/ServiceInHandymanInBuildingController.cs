@@ -96,15 +96,12 @@ namespace api.Controllers
 
             if (!ModelState.IsValid) return BadRequest();
 
-          
 
+            _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == listDto.FirstOrDefault().BuildingId));
+            _db.SaveChanges();
 
             foreach (var dto in listDto)
-            {
-
-                _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == dto.BuildingId && x.ServiceId==dto.ServiceId && x.UserId==dto.UserId));
-                _db.SaveChanges();
-
+            {               
                 var entity = _mapper.Map<ServiceInHandymanInBuilding>(dto);
                 _db.Add(entity);
                 _db.SaveChanges();
