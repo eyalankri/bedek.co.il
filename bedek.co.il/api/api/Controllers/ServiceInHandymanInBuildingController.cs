@@ -64,12 +64,12 @@ namespace api.Controllers
                                     Company = reader["Company"] != DBNull.Value ? (string)reader["Company"] : "",
                                     ServiceName = (string)reader["ServiceName"],
                                     ServiceId = (int)reader["ServiceId"],                                    
-                                    BuildingId = buildingId,
-                                    IsAssociated = reader["BuildingId"] != DBNull.Value
+                                    BuildingId = reader["BuildingId"] == DBNull.Value ? null : (int?)reader["BuildingId"],
+                                    IsAssociated = reader["BuildingId"] == DBNull.Value ? false : true,
 
                                     //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
                                     //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
-                                });
+                                });;
 
                             }
                         }
@@ -93,21 +93,30 @@ namespace api.Controllers
         [EnableCors("MyPolicy")]
         public IActionResult Update([FromBody] ServiceInHandymanInBuildingDto[] listDto )
         {
+            try
+            {
+                if (!ModelState.IsValid) return BadRequest();
 
-            if (!ModelState.IsValid) return BadRequest();
 
-
-            _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == listDto.FirstOrDefault().BuildingId));
-            _db.SaveChanges();
-
-            foreach (var dto in listDto)
-            {               
-                var entity = _mapper.Map<ServiceInHandymanInBuilding>(dto);
-                _db.Add(entity);
+                _db.ServiceInHandymanInBuilding.RemoveRange(_db.ServiceInHandymanInBuilding.Where(x => x.BuildingId == listDto.FirstOrDefault().BuildingId));
                 _db.SaveChanges();
-               
 
+                foreach (var dto in listDto)
+                {
+                    var entity = _mapper.Map<ServiceInHandymanInBuilding>(dto);
+                    _db.Add(entity);
+                    _db.SaveChanges();
+
+
+                }
             }
+            catch (Exception ex)
+            {
+                var x = ex.ToString();
+                throw;
+            }
+
+            
 
             return Ok();
 

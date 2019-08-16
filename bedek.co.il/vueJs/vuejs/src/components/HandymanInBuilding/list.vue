@@ -3,7 +3,6 @@
     <div class="container">
       <vue-good-table
         @on-selected-rows-change="selectionChanged"
-         
         :columns="columns"
         :rows="rows"
         :select-options="{ enabled: true }"
@@ -12,6 +11,11 @@
            placeholder: ' חפש בטבלה ', 
           }"
         :rtl="true"
+        :pagination-options="{ 
+         enabled: true, 
+         perPage: 10 , 
+         perPageDropdown: [50, 100]
+        }"
         styleClass="vgt-table condensed"
       >
         <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
@@ -37,6 +41,8 @@ export default {
       buildingNumber: null,
       projectName: null,
       city: null,
+      allowUpdate: false,
+      checkedItems: [],
       rows: [],
       columns: [
         {
@@ -60,12 +66,16 @@ export default {
           hidden: true
         },
         {
+          field: "isAssociated",
+          hidden: true
+        },
+        {
           field: "buildingId",
           hidden: true
         },
         {
           label: "בחר",
-          field: "isAssociated",
+          field: "checkBox",
           html: true
         }
       ]
@@ -74,56 +84,11 @@ export default {
   mounted() {
     this.loadBuilding();
     this.loadServiceInHandymanInBuilding();
-    console.log(this.rows)
-    this.rows.forEach(function(row){
-        console.log(row);
-
-      });
-  },
-   beforeDestroy(){
-   $('.chkSelected').each(function(){
-      console.log($(this));
-    });
   },
 
   methods: {
-    rowStyleClassFn(row) {
-      return row.name == "Dan" ? "clsRow_" + row.name : "";
-    },
     selectionChanged(params) {
-      var arrSelectedRows = params.selectedRows;
-      $(".chkSelected").prop("checked", false); // init un-check all
-
-      var listDto = [];
-      arrSelectedRows.forEach(function(el) {
-        var chkElm = $("." + el.userId + "_" + el.serviceId);
-        $(chkElm).prop("checked", true);
-       
-
-        var obj = {
-          UserId: el.userId,
-          FirstName: el.firstName,
-          LastName: el.lastName,
-          ServiceName: el.serviceName,
-          ServiceId: el.serviceId,
-          Company: el.company,
-          BuildingId: el.buildingId
-        };
-        listDto.push(obj);
-      });
-
-      axios
-        .post(
-          process.env.ROOT_API + "ServiceInHandymanInBuilding/Update",
-          listDto,
-          this.$store.getters.getTokenHeader
-        )
-        .then(res => {
-          console.log(res);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.updateServiceInHandymanInBuilding(params);
     },
     loadBuilding() {
       axios
@@ -145,8 +110,50 @@ export default {
           console.log(error);
         });
     },
+    updateServiceInHandymanInBuilding(params) {
+      if (!this.allowUpdate) {
+        // when page is loading there is a row selected which calls selectionChanged() which initiate the update.
+        // allowUpdate false will block it. only than set to true
+        this.allowUpdate = true;
+        return false;
+      }
 
+      let buildingId = this.buildingId;
+       
+      $(".clsChk").prop("checked", false); // init un-check all
+
+      var listDto = [];
+      params.selectedRows.forEach(function(el) {
+        var chkElm = $("#" + el.userId + "_" + el.serviceId);
+        $(chkElm).prop("checked", true);
+
+        var obj = {
+          UserId: el.userId,
+          FirstName: el.firstName,
+          LastName: el.lastName,
+          ServiceName: el.serviceName,
+          ServiceId: el.serviceId,
+          Company: el.company,
+          BuildingId: buildingId
+        };
+        listDto.push(obj);
+      });
+
+      axios
+        .post(
+          process.env.ROOT_API + "ServiceInHandymanInBuilding/Update",
+          listDto,
+          this.$store.getters.getTokenHeader
+        )
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     loadServiceInHandymanInBuilding() {
+      console.clear();
       this.rows = [];
       axios
         .get(
@@ -158,18 +165,30 @@ export default {
         .then(response => {
           response.data.forEach(el => {
             var isChecked = el.isAssociated ? "checked" : "";
-            el.isAssociated = `<input type="checkbox" ${isChecked} class="chkSelected ${el.userId}_${el.serviceId}"><span></span>`;
+            var id = `${el.userId}_${el.serviceId}`;
+            el.checkBox = `<input type='checkbox' class='${isChecked} clsChk' id='${id}'><span></span>`;
+            this.checkedItems.push(id);
           });
 
           this.rows = response.data;
 
+          //this.$set(this.rows[0], 'vgtSelected', true);
+
+          this.checkedItems.forEach(function(id) {
+            $("#" + id).ready(function() {
+              var el = $("#" + id);
+              if ($(el).hasClass("checked")) {
+                $(el).click();
+              }
+            });
+          });
         })
         .catch(error => {
           console.log("loadBuildingInfo: " + error);
         });
     }
-  },  
-}
+  }
+};
 </script>
 
 <style>
