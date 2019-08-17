@@ -153,7 +153,7 @@ export default {
               el.phone2,
               el.company,
               `<a href='#/handyman/add-update/${el.userId}'><i class="material-icons">edit</i></a>`,
-              `<a href='#/service-in-handyman/list/${el.userId}'><i class="material-icons">build</i></a>`
+              `<a href='#/service-in-handyman/list/${el.userId}'><i class="material-icons">gavel</i></a>`
 
             ]);
           });
@@ -175,7 +175,7 @@ export default {
           { title: "טלפון" },
           { title: "חברה" },
           { title: "עדכן" },
-          { title: "חוק מכר" },
+          { title: "חוקי מכר" },
         ]
       });
     },
