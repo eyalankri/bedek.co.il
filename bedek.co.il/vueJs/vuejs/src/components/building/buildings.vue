@@ -50,13 +50,11 @@
           :columns="columns"
           :rows="rows"
           :rtl="true"
-          :search-options="{ 
-          enabled: true,
-           placeholder: ' חפש בטבלה ', 
-          }"
+          :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
+          :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
           styleClass="vgt-table condensed"
         >
-          <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
+          <div slot="emptystate">אין נתונים בטבלה</div>
         </vue-good-table>
       </div>
     </div>

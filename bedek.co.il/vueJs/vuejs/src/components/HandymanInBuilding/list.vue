@@ -4,21 +4,13 @@
       <vue-good-table
         @on-selected-rows-change="selectionChanged"
         :columns="columns"
-        :rows="rows"
-        :select-options="{ enabled: true }"
-        :search-options="{ 
-          enabled: true,
-           placeholder: ' חפש בטבלה ', 
-          }"
+        :rows="rows"       
+        :search-options="{ enabled: true, placeholder: ' חפש בטבלה ', }"
         :rtl="true"
-        :pagination-options="{ 
-         enabled: true, 
-         perPage: 10 , 
-         perPageDropdown: [50, 100]
-        }"
+        :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
         styleClass="vgt-table condensed"
       >
-        <div slot="emptystate">אין אנשי מקצוע ברשימה</div>
+        <div slot="emptystate">אין נתונים בטבלה</div>
       </vue-good-table>
 
       <!-- click on a row below to show the action button -->
