@@ -2,17 +2,17 @@
   <div class="container">
     <div class="row">
       <div class="input-field col s12 m6 l8">
-        <input id="docDescription" type="text" v-model="docDescription">
+        <input id="docDescription" type="text" v-model="docDescription" />
         <label for="docDescription">תיאור המסמך</label>
       </div>
       <div class="col s12 m6 l4">
         <div class="file-field input-field">
           <div class="btn">
             <span>בחר קובץ</span>
-            <input type="file" id="apDoc" @change="onFileSelected">
+            <input type="file" id="apDoc" @change="onFileSelected" />
           </div>
           <div class="file-path-wrapper">
-            <input class="file-path validate" type="text" placeholder="בחר מסמך">
+            <input class="file-path validate" type="text" placeholder="בחר מסמך" />
           </div>
         </div>
       </div>
@@ -27,11 +27,9 @@
       </div>
     </div>
     <div class="row">
-       
-
-      <div id="vgt">
-        
-        <vue-good-table
+      <div v-show="expandMoreList">
+        <div>
+          <vue-good-table
             :columns="columns"
             :rows="rows"
             :rtl="true"
@@ -41,7 +39,10 @@
           >
             <div slot="emptystate">אין נתונים בטבלה</div>
           </vue-good-table>
-
+        </div>
+        <div class="material-table">
+          <table id="apartmentDocs" class="mdl-data-table" width="100%"></table>
+        </div>
       </div>
     </div>
   </div>
@@ -54,10 +55,8 @@ import { VueGoodTable } from "vue-good-table";
 import DataTable from "vue-materialize-datatable";
 import moment from "moment";
 
-
 export default {
   name: "apartmentDocs",
-  components: { VueGoodTable },
   props: ["propApartmentId"],
   data() {
     return {
@@ -73,12 +72,17 @@ export default {
       buildingId: null,
 
       rows: [],
-      columns: [         
+      columns: [
+        {
+          label: "Id",
+          field: "apartmentDocId",
+          type: "number"
+        },
         {
           label: "ת.העלאה",
-          
+          dateInputFormat: "dd-MM-yyyy",
           field: "dateUploaded",
-          
+          type: "date"
         },
         {
           label: "תיאור",
@@ -86,18 +90,11 @@ export default {
         },
         {
           label: "הורד",
-          field: "download",
-          html: true
+          field: "download"
         },
         {
           label: "הצג",
-          field: "show",
-            html: true
-        },
-        {
-          label: "מחק",
-          field: "delete",
-            html: true
+          field: "show"
         }
       ]
     };
@@ -123,7 +120,7 @@ export default {
       }
     },
     uploadDoc() {
-       this.feedback = null;
+      this.feedback = null;
       if (!this.isFileValid) return false;
 
       var formData = new FormData();
@@ -156,61 +153,89 @@ export default {
         case "application/pdf":
         case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": //excel
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": // word
-        
           isFileValid = true;
           break;
 
         default:
           isFileValid = false;
       }
-    
+
       return isFileValid;
     },
     listDocsInApartment() {
       this.dataset = [];
       axios
         .get(
-            process.env.ROOT_API + "ApartmentDocs/List?apartmentId=" +
+          process.env.ROOT_API +
+            "ApartmentDocs/List?apartmentId=" +
             this.apartmentId,
-            this.$store.getters.getTokenHeader
+          this.$store.getters.getTokenHeader
         )
         .then(res => {
           res.data.forEach(res => {
-
-             res.dateUploaded = moment(res.dateUploaded).format("DD/MM/YYYY");
-             res.download =  `<a download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">file_download</i></a>`;
-             res.show = `<a target="_blank" download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">remove_red_eye</i></a>`;                           
-             res.delete = `<a href='javascript:;' class='delDoc' id='del_${res.apartmentDocId}'><i class=" material-icons">delete</i></a>`;
+            this.dataset.push([
+              res.apartmentDocId,
+              moment(res.dateUploaded).format("dd/MM/yyyy"),
+              res.docDescription,
+              `<a download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class="large material-icons">file_download</i></a>`,
+              `<a target="_blank" download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class="large material-icons">remove_red_eye</i></a>`
+            ]);
           });
 
-          //this.initializeDataTable();
-
-
-
+          this.initializeDataTable();
 
           this.rows = res.data;
-
-
         })
         .catch(error => {
           console.log(error);
         });
-    },  
-    deleteDocsInApartment(){
-      alert('delete');
-    }  
+    },
+    initializeDataTable() {
+      $("#apartmentDocs").DataTable({
+        data: this.dataset,
+        destroy: true,
+        language: {
+          processing: "מעבד...",
+          lengthMenu: "הצג _MENU_ פריטים",
+          zeroRecords: "לא קיימים מסמכים לדירה זו",
+          emptyTable: "לא קיימים מסמכים לדירה זו",
+          info: "_START_ עד _END_ מתוך _TOTAL_ רשומות",
+          infoEmpty: "0 עד 0 מתוך 0 רשומות",
+          infoFiltered: "(מסונן מסך _MAX_  רשומות)",
+          infoPostFix: "",
+          search: "חפש:",
+          url: "",
+          paginate: {
+            first: "ראשון",
+            previous: "קודם",
+            next: "הבא",
+            last: "אחרון"
+          }
+        },
+        order: [0, "desc"],
+        columns: [
+          { title: "ID" },
+          { title: "ת.העלאה" },
+          { title: "תיאור" },
+          { title: "הורד" },
+          { title: "הצג" }
+        ],
+        columnDefs: [
+          {
+            targets: [1, 2, 3],
+            className: "mdl-data-table__cell--non-numeric"
+          },
+          {
+            // first col
+            targets: [0],
+            visible: false,
+            searchable: false
+          }
+        ]
+      });
+    }
   }
 };
-
-$(function(){
-  $('#vgt').on('click', '.delDoc', function() {
-     console.log($(this).attr('id'));
-     app.deleteDocInApartemtn()
-
-  });
-  
-})
-
 </script>
 
 <style>

@@ -147,11 +147,12 @@ export default {
           console.log(res);
           res.data.forEach(el => {
             this.dataset.push([
+              el.company,
               el.firstName,
               el.lastName,
               el.phone1,
               el.phone2,
-              el.company,
+             
               `<a href='#/handyman/add-update/${el.userId}'><i class="material-icons">edit</i></a>`,
               `<a href='#/service-in-handyman/list/${el.userId}'><i class="material-icons">build</i></a>`
 
@@ -169,11 +170,11 @@ export default {
         data: this.dataset,
         destroy: true,
         columns: [
+           { title: "חברה" },
           { title: "שם" },
           { title: "משפחה" },
           { title: "טלפון" },
-          { title: "טלפון" },
-          { title: "חברה" },
+          { title: "טלפון" },         
           { title: "עדכן" },
           { title: "חוק מכר" },
         ]

@@ -183,11 +183,4 @@ export default {
 };
 </script>
 
-<style>
-.vgt-checkbox-col {
-  display: none;
-}
-.vgt-checkbox-col input[type="checkbox"] {
-  opacity: 1;
-}
-</style>
+ 

@@ -1,36 +1,86 @@
-.ltr{
-    direction: ltr !important;
-    text-align: left !important;
+.ltr {
+  direction: ltr !important;
+  text-align: left !important;
 }
 
+a {
+  color: #8178ff
+}
 
-a{color:#8178ff}
- 
-.mdl-data-table{min-width: 500px;}
+.material-icons {
+  color: #26a69a;
+  font-size: 1.4em;
+}
+
+.mdl-data-table {
+  min-width: 500px;
+}
 
 .title-container {
   padding: 20px 0
 }
-
 
 .title {
   font-size: 22px;
   line-height: 20px;
 }
 
-.hand{cursor: pointer}
+.hand {
+  cursor: pointer
+}
+
 .material-icons {
   display: inline-flex;
   vertical-align: top;
 }
- 
+
+/* vue-good-table */
+
+.vgt-table th.sorting:after {
+  right: -7px;
+}
+
+.vgt-global-search {
+  background: none;
+  border: 0
+}
+
+.vgt-table {
+  font-size: 14px !important;
+}
+
+.vgt-table thead th {
+  background: #fff
+}
+
+.vgt-wrap__footer {
+  background: #fef8f8;
+  padding: 0.5em;
+}
+
+.vgt-wrap__footer .footer__navigation__page-btn {
+  font-weight: normal
+}
+
+.vgt-checkbox-col {
+  display: none;
+}
+
+.vgt-checkbox-col input[type="checkbox"] {
+  opacity: 1;
+}
+
+/* End: vue-good-table */
+
 .material-table th {
   text-align: center !important;
   width: 20% !important;
 }
+
 .material-table td {
   text-align: center !important;
 }
+
 .mdl-grid {
   width: 100%;
 }
@@ -124,7 +174,6 @@ div.material-table .table-footer label {
   display: flex;
   -webkit-flex-direction: row;
   /* works with row or column */
-
   flex-direction: row;
   -webkit-align-items: center;
   align-items: center;
@@ -137,7 +186,6 @@ div.material-table .table-footer .select-wrapper {
   display: flex;
   -webkit-flex-direction: row;
   /* works with row or column */
-
   flex-direction: row;
   -webkit-align-items: center;
   align-items: center;
@@ -145,8 +193,7 @@ div.material-table .table-footer .select-wrapper {
   justify-content: center;
 }
 
-div.material-table .table-footer .dataTables_info,
-div.material-table .table-footer .dataTables_length {
+div.material-table .table-footer .dataTables_info, div.material-table .table-footer .dataTables_length {
   margin-right: 32px;
 }
 
@@ -212,8 +259,8 @@ div.material-table table tr {
   font-size: 12px;
 }
 
-
 /* header */
+
 div.material-table table th {
   font-size: 12px;
   font-weight: 500;
@@ -226,11 +273,10 @@ div.material-table table th {
   vertical-align: middle;
   outline: none !important;
 }
- 
+
 /* for sorting */
- div.material-table table th.sorting:after,
-div.material-table table th.sorting_asc:after,
-div.material-table table th.sorting_desc:after {
+
+div.material-table table th.sorting:after, div.material-table table th.sorting_asc:after, div.material-table table th.sorting_desc:after {
   font-family: "Material Icons";
   font-weight: normal;
   font-style: normal;
@@ -248,9 +294,7 @@ div.material-table table th.sorting_desc:after {
   vertical-align: middle;
 }
 
-div.material-table table th.sorting:hover:after,
-div.material-table table th.sorting_asc:after,
-div.material-table table th.sorting_desc:after {
+div.material-table table th.sorting:hover:after, div.material-table table th.sorting_asc:after, div.material-table table th.sorting_desc:after {
   display: inline-block;
 }
 
@@ -262,13 +306,11 @@ div.material-table table tbody tr:hover {
   background-color: rgb(238, 238, 238);
 }
 
-div.material-table table th:first-child,
-div.material-table table td:first-child {
+div.material-table table th:first-child, div.material-table table td:first-child {
   padding: 0 0 0 24px;
 }
 
-div.material-table table th:last-child,
-div.material-table table td:last-child {
+div.material-table table th:last-child, div.material-table table td:last-child {
   padding: 0 14px 0 0;
 }
 
