@@ -21,7 +21,7 @@
 
 
             <!-- sendContent in the child / getContentFromEditor is belllow-->
-            <tiptap id="tiptap" :editorContent="this.apartmentComment"></tiptap>
+            <tiptap id="tiptap" ref="tiptap" :editorContent="this.apartmentComment"></tiptap>
 
 
 
@@ -139,7 +139,7 @@ export default {
     }
     
     
-    this.apartmentComment='<h3>apratment comment</h3>';
+ 
   },
   methods: {
     getContentFromEditor(html){
@@ -231,7 +231,8 @@ export default {
 
       var isValid = this.validateInputes();
       if (!isValid) return false;
-      this.progressBar = true;    
+    
+    this.progressBar = true;    
       let data = {
         BuildingId: this.$route.params.id,
         DateOfEntrance: moment(moment(this.dateOfEntrance, 'DD-MM-YYYY')).format('MM-DD-YYYY'),
@@ -267,6 +268,9 @@ export default {
           this.identityCardId = null;
           this.phone1 = null;
           this.phone2 = null;
+        $('.ProseMirror').html('') // clear the tiptap editor
+          
+
 
           this.emitApartmentList();
         })
