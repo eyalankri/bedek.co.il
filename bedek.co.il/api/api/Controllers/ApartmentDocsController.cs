@@ -7,11 +7,9 @@ using api.Dtos;
 using api.Models;
 using api.Utilities;
 using AutoMapper;
-using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 
 
@@ -19,7 +17,7 @@ namespace api.Controllers
 {
 
     [Route("api/[controller]")]
-    [Authorize]
+    
     public class ApartmentDocsController : ControllerBase
     {
         
@@ -123,6 +121,24 @@ namespace api.Controllers
                            
                            
             
+        }
+
+        [HttpGet]       
+        [Route("Delete")]
+        public IActionResult Delete( int apartmentDocId)
+        {
+
+            if (!ModelState.IsValid) return BadRequest();
+            
+          
+                _db.ApartmentDocs.Remove(_db.ApartmentDocs.Where(x => x.ApartmentDocId == apartmentDocId).FirstOrDefault());
+                _db.SaveChanges();
+               
+     
+
+            return Ok();
+
+
         }
 
     }

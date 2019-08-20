@@ -40,6 +40,16 @@
             styleClass="vgt-table condensed"
           >
             <div slot="emptystate">אין נתונים בטבלה</div>
+            
+          <template slot="table-row" slot-scope="props">
+              <span v-if="props.column.field == 'delete'"><a href="javascript:;"><i @click="deleteApartmentDoc(props.row.apartmentDocId, props.row.docDescription)" class="material-icons">delete</i></a></span>
+              <span v-else-if="props.column.field == 'download'" v-html="props.formattedRow[props.column.field]"></span>
+              <span v-else-if="props.column.field == 'show'" v-html="props.formattedRow[props.column.field]"></span>     
+              <span v-else-if="props.column.field == 'docDescription'">{{props.formattedRow[props.column.field]}}</span>
+              <span v-else>
+                {{props.formattedRow[props.column.field]}}
+              </span>              
+          </template> 
           </vue-good-table>
 
       </div>
@@ -65,18 +75,15 @@ export default {
       progressBar: false,
       docDescription: null,
       isFileValid: null,
-
       apartmentId: this.propApartmentId,
       docDescription: null,
-      postedFile: null,
-      dataset: null,
+      postedFile: null,      
       buildingId: null,
 
       rows: [],
       columns: [         
         {
-          label: "ת.העלאה",
-          
+          label: "ת.העלאה",          
           field: "dateUploaded",
           
         },
@@ -106,6 +113,24 @@ export default {
     this.listDocsInApartment();
   },
   methods: {
+    deleteApartmentDoc(apartmentDocId, docDescription){
+      var isConfirmed = confirm("למחוק את המסמך?\n\n תיאור: " + docDescription);
+    
+      if (!isConfirmed) return false;
+      
+       axios
+        .get(
+            process.env.ROOT_API + "ApartmentDocs/Delete?apartmentDocId=" +
+            parseInt(apartmentDocId, 10),
+            this.$store.getters.getTokenHeader
+        )
+        .then(res => {
+          this.listDocsInApartment();           
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     onFileSelected() {
       this.feedback = null;
       this.isFileValid = null;
@@ -167,7 +192,7 @@ export default {
       return isFileValid;
     },
     listDocsInApartment() {
-      this.dataset = [];
+      
       axios
         .get(
             process.env.ROOT_API + "ApartmentDocs/List?apartmentId=" +
@@ -180,7 +205,7 @@ export default {
              res.dateUploaded = moment(res.dateUploaded).format("DD/MM/YYYY");
              res.download =  `<a download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">file_download</i></a>`;
              res.show = `<a target="_blank" download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">remove_red_eye</i></a>`;                           
-             res.delete = `<a href='javascript:;' class='delDoc' id='del_${res.apartmentDocId}'><i class=" material-icons">delete</i></a>`;
+             
           });
 
           //this.initializeDataTable();
@@ -196,20 +221,11 @@ export default {
           console.log(error);
         });
     },  
-    deleteDocsInApartment(){
-      alert('delete');
-    }  
+    
   }
 };
 
-$(function(){
-  $('#vgt').on('click', '.delDoc', function() {
-     console.log($(this).attr('id'));
-     app.deleteDocInApartemtn()
-
-  });
-  
-})
+ 
 
 </script>
 
