@@ -204,7 +204,7 @@ export default {
 
              res.dateUploaded = moment(res.dateUploaded).format("DD/MM/YYYY");
              res.download =  `<a download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">file_download</i></a>`;
-             res.show = `<a target="_blank" download href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">remove_red_eye</i></a>`;                           
+             res.show = `<a target="_blank" href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">remove_red_eye</i></a>`;                           
              
           });
 
