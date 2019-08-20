@@ -37,33 +37,33 @@ a {
 /* vue-good-table */
 
 .vgt-table th.sorting:after {
-  right: -7px;
+  right: -7px !important;
 }
 
 .vgt-global-search {
-  background: none;
-  border: 0
+  background: none !important;
+  border: 0 !important;
 }
 
 .vgt-table {
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 .vgt-table thead th {
-  background: #fff
+  background: #fff !important;
 }
 
 .vgt-wrap__footer {
-  background: #fef8f8;
-  padding: 0.5em;
+  background: #fef8f8 !important;
+  padding: 0.5em !important;
 }
 
 .vgt-wrap__footer .footer__navigation__page-btn {
-  font-weight: normal
+  font-weight: normal !important;
 }
 
 .vgt-checkbox-col {
-  display: none;
+  display: none !important;
 }
 
 .vgt-checkbox-col input[type="checkbox"] {

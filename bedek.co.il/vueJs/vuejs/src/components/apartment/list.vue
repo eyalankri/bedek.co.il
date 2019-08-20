@@ -19,8 +19,20 @@
           <i class="material-icons" v-if="expandMoreList">expand_more</i>
           <i class="material-icons" v-if="!expandMoreList">expand_less</i>
         </div>
-        <div v-show="expandMoreList" class="material-table">
-          <table id="apartment" class="mdl-data-table" width="100%"></table>
+        <div v-show="expandMoreList" >
+          <div id="vgt">
+            <vue-good-table
+              :columns="columns"
+              :rows="rows"
+              :rtl="true"
+              :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
+              :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
+              styleClass="vgt-table condensed">
+              <div slot="emptystate">אין נתונים בטבלה</div>
+
+               
+            </vue-good-table>
+          </div>
         </div>
       </div>
       <!-- /list-buildings -->
@@ -31,14 +43,16 @@
 
 <script>
 import axios from "axios";
-import DataTable from "vue-materialize-datatable";
+import "vue-good-table/dist/vue-good-table.css";
+import { VueGoodTable } from "vue-good-table";
 import moment from "moment";
 import addUpdateApartment from "@/components/apartment/add-update";
 
 export default {
-  components: {
-    name: "AppartmentList",
-    addUpdateApartment
+  name: "AppartmentList",
+  components: {    
+    addUpdateApartment,
+    VueGoodTable
   },
 
   data() {
@@ -55,7 +69,37 @@ export default {
       Email: null,
       Phone1: null,
       Phone2: null,
-      IentidyCardId: null
+      IentidyCardId: null,
+
+      rows: [],
+      columns: [
+        {
+          label: "דירה",
+          field: "apartmentNumber",
+          type: "number"
+        },
+        {
+          label: "ת.כניסה",
+          field: "dateOfEntrance"
+        },
+        {
+          label: "שם",
+          field: "user.firstName"
+        },
+        {
+          label: "משפחה",
+          field: "user.lastName"
+        },
+        {
+          label: "טלפון",
+          field: "user.phone1"
+        },
+        {
+          label: "הצג",
+          field: "show",
+          html: true
+        }
+      ]
     };
   },
   mounted() {
@@ -64,11 +108,11 @@ export default {
   },
   methods: {
     loadBuildingInfo() {
-      
       axios
         .get(
-          process.env.ROOT_API + "building/Get?buildingId=" +
-          this.$route.params.id,
+          process.env.ROOT_API +
+            "building/Get?buildingId=" +
+            this.$route.params.id,
           this.$store.getters.getTokenHeader
         )
         .then(res => {
@@ -99,97 +143,34 @@ export default {
       }
     },
     listApartments() {
-      this.dataset = [];
- 
+
       axios
         .get(
-          process.env.ROOT_API + "Apartment/List?buildingId=" +
-            this.buildingId,
-            this.$store.getters.getTokenHeader
+          process.env.ROOT_API + "Apartment/List?buildingId=" + 
+          this.buildingId,
+          this.$store.getters.getTokenHeader
         )
-        .then(response => {
-          response.data.forEach(el => {
-            this.dataset.push([
-              el.apartmentId,
-              el.apartmentNumber,
-              moment(el.dateOfEntrance).format("MM/DD/YYYY"),
-              el.user.firstName,
-              el.user.lastName,
-              el.user.phone1,
-              `<a href='/${
-                this.$router.resolve({
-                  name: "showApartment",
-                  params: { id: el.apartmentId }
-                }).href
-              }'><i class="material-icons">perm_identity</i></a>`
-            ]);
+        .then(res => {          
+          console.log(res.data)
+          res.data.forEach(res => {
+            res.dateOfEntrance = moment(res.dateOfEntrance).format("DD/MM/YYYY");
+            res.show = `<a href='/${
+              this.$router.resolve({
+                name: "showApartment",
+                params: { id: res.apartmentId }
+              }).href
+            }'><i class="material-icons">perm_identity</i></a>`;
           });
+         
+         this.rows = res.data;
 
-          this.initializeDataTable();
         })
         .catch(error => {
           console.log("loadBuildingInfo: " + error);
         });
     },
-    initializeDataTable() {
-      // create & bind the data.
-      $("#apartment").DataTable({
-        data: this.dataset,
-         language: {
-          processing: "מעבד...",
-          lengthMenu: "הצג _MENU_ פריטים",
-          zeroRecords: "לא קיימות דירות לבניין זה",
-          emptyTable: "לא קיימות דירות לבניין זה",
-          info: "_START_ עד _END_ מתוך _TOTAL_ רשומות",
-          infoEmpty: "0 עד 0 מתוך 0 רשומות",
-          infoFiltered: "(מסונן מסך _MAX_  רשומות)",
-          infoPostFix: "",
-          search: "חפש:",
-          url: "",
-          paginate: {
-            first: "ראשון",
-            previous: "קודם",
-            next: "הבא",
-            last: "אחרון"
-          }
-        },
-        destroy: true,
-        order: [0, "desc"],
-        columns: [
-          { title: "ID" },
-          { title: "דירה" },
-          { title: "ת.כניסה" },
-          { title: "שם" },
-          { title: "משפחה" },
-          { title: "טלפון" },
-          { title: "הצג" }
-        ],
-        columnDefs: [
-          {
-            targets: [2, 3, 4, 5, 6],
-            className: "mdl-data-table__cell--non-numeric"
-          },
-          {
-            // first col
-            targets: [0],
-            visible: false,
-            searchable: false
-          }
-        ]
-      });
-
-      $(".mdl-cell--6-col:first").attr(
-        "class",
-        "mdl-cell--12-col-phone mdl-cell--2-col"
-      );
-      $(".mdl-cell--6-col").attr(
-        "class",
-        "mdl-cell--12-col-phone mdl-cell--10-col"
-      );
-    }
+    
   }
 };
 </script>
-
-<style>
-</style>
+ 

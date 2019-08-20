@@ -37,11 +37,11 @@
             :rtl="true"
             :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
             :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
-            styleClass="vgt-table condensed"
+            styleClass="vgt-table-custom"
           >
             <div slot="emptystate">אין נתונים בטבלה</div>
             
-          <template slot="table-row" slot-scope="props">
+          <template slot="table-row" slot-scope="props" styleClass="vgt-table-custom">
               <span v-if="props.column.field == 'delete'"><a href="javascript:;"><i @click="deleteApartmentDoc(props.row.apartmentDocId, props.row.docDescription)" class="material-icons">delete</i></a></span>
               <span v-else-if="props.column.field == 'download'" v-html="props.formattedRow[props.column.field]"></span>
               <span v-else-if="props.column.field == 'show'" v-html="props.formattedRow[props.column.field]"></span>     
@@ -51,8 +51,8 @@
               </span>              
           </template> 
           </vue-good-table>
-
       </div>
+
     </div>
   </div>
 </template>
@@ -60,8 +60,7 @@
 <script>
 import axios from "axios";
 import "vue-good-table/dist/vue-good-table.css";
-import { VueGoodTable } from "vue-good-table";
-import DataTable from "vue-materialize-datatable";
+import { VueGoodTable } from "vue-good-table"; 
 import moment from "moment";
 
 
@@ -207,12 +206,7 @@ export default {
              res.show = `<a target="_blank" href='Files/AppartmentsDocs/${res.buildingId}/${res.apartmentId}/${res.fileName}'><i class=" material-icons">remove_red_eye</i></a>`;                           
              
           });
-
-          //this.initializeDataTable();
-
-
-
-
+          
           this.rows = res.data;
 
 
