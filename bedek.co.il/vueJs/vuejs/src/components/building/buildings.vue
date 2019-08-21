@@ -51,7 +51,7 @@
           :rows="rows"
           :rtl="true"
           :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
-          :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
+          :pagination-options="{ enabled: true, perPage: 50 , perPageDropdown: [100]}"
           styleClass="vgt-table condensed"
         >
           <div slot="emptystate">אין נתונים בטבלה</div>

@@ -18,8 +18,21 @@
         <i class="material-icons" v-if="expandMoreList">expand_more</i>
         <i class="material-icons" v-if="!expandMoreList">expand_less</i>
       </div>
-      <div v-show="expandMoreList" class="material-table">
-        <table id="handymans" class="mdl-data-table" width="100%"></table>
+      <div v-show="expandMoreList">
+       
+         <div id="vgt">
+            <vue-good-table
+              :columns="columns"
+              :rows="rows"
+              :rtl="true"
+              :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
+              :pagination-options="{ enabled: true, perPage: 50 , perPageDropdown: [100]}"
+              styleClass="vgt-table"
+            >
+              <div slot="emptystate">אין נתונים בטבלה</div>
+            </vue-good-table>
+          </div>
+       
       </div>
     </div>
     <!-- /list-buildings -->
@@ -31,12 +44,15 @@
 import axios from "axios";
 import moment from "moment";
 import addUpdate from "@/components/handyman/add-update";
+import "vue-good-table/dist/vue-good-table.css";
+import { VueGoodTable } from "vue-good-table";
 
 export default {
   name: "handyman",
   components: {
     name: "AppartmentList",
-    addUpdate
+    addUpdate,
+    VueGoodTable
   },
 
   data() {
@@ -55,7 +71,43 @@ export default {
       phone1: null,
       phone2: null,
       identityCardId: null,
-      dataset: []
+      
+         rows: [],
+      columns: [
+        {
+          label: "חברה",
+          field: "company",
+         
+        },
+        {
+          label: "שם פרטי",
+          field: "firstName"
+        },
+        {
+          label: "שם משפחה",
+          field: "lastName",          
+        },
+        {
+          label: "טלפון 1",
+          field: "phone1",          
+        },
+        {
+          label: "טלפון 2",
+          field: "phone2",          
+        },
+        {
+          label: "עדכון",
+          field: "update",
+          html: true
+        },
+        {
+          label: "חוקי מכר",
+          field: "services",
+          html: true
+        },
+
+      ]
+
     };
   },
   mounted() {
@@ -143,43 +195,21 @@ export default {
           process.env.ROOT_API + "Handyman/List",
           this.$store.getters.getTokenHeader
         )
-        .then(res => {
-          console.log(res);
+        .then(res => {    
           res.data.forEach(el => {
-            this.dataset.push([
-              el.company,
-              el.firstName,
-              el.lastName,
-              el.phone1,
-              el.phone2,
-             
-              `<a href='#/handyman/add-update/${el.userId}'><i class="material-icons">edit</i></a>`,
-              `<a href='#/service-in-handyman/list/${el.userId}'><i class="material-icons">gavel</i></a>`
 
-            ]);
+            el.update =  `<a href='#/handyman/add-update/${el.userId}'><i class="material-icons">edit</i></a>`;
+            el.services = `<a href='#/service-in-handyman/list/${el.userId}'><i class="material-icons">gavel</i></a>`; 
           });
 
-          this.initializeDataTable();
+          this.rows = res.data;
+          
         })
         .catch(error => {
           console.log(error);
         });
     },
-    initializeDataTable() {
-      $("#handymans").DataTable({
-        data: this.dataset,
-        destroy: true,
-        columns: [
-           { title: "חברה" },
-          { title: "שם" },
-          { title: "משפחה" },
-          { title: "טלפון" },
-          { title: "טלפון" },         
-          { title: "עדכן" },
-          { title: "חוקי מכר" },
-        ]
-      });
-    },
+   
 
     refreshListFromEmit() {       
       this.dataset = [];
@@ -189,5 +219,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+ 

@@ -6,7 +6,7 @@
           <div class="row">
             <div class="input-field col s12 m6">
               <input id="serviceName" name="serviceName" type="text" v-model="serviceName">
-              <label for="serviceName">שם השירות</label>
+              <label for="serviceName">שם חוק המכר</label>
             </div>
             <div class="input-field col s12 m6">
               <input
@@ -99,7 +99,7 @@ export default {
       this.feedback = "";
 
       if (!this.serviceName) {
-        this.feedback = "יש לרשום את שם השירות.";
+        this.feedback = "יש לרשום את שם חוק המכר.";
         return false;
       }
       if (

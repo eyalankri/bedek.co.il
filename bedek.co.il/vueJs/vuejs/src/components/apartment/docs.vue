@@ -37,17 +37,17 @@
             :rtl="true"
             :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
             :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
-            styleClass="vgt-table-custom"
+            styleClass="vgt-table"
           >
             <div slot="emptystate">אין נתונים בטבלה</div>
             
-          <template slot="table-row" slot-scope="props" styleClass="vgt-table-custom">
+          <template slot="table-row" slot-scope="props" styleClass="vgt-table">
               <span v-if="props.column.field == 'delete'"><a href="javascript:;"><i @click="deleteApartmentDoc(props.row.apartmentDocId, props.row.docDescription)" class="material-icons">delete</i></a></span>
               <span v-else-if="props.column.field == 'download'" v-html="props.formattedRow[props.column.field]"></span>
               <span v-else-if="props.column.field == 'show'" v-html="props.formattedRow[props.column.field]"></span>     
               <span v-else-if="props.column.field == 'docDescription'">{{props.formattedRow[props.column.field]}}</span>
               <span v-else>
-                {{props.formattedRow[props.column.field]}}
+                {{props.formattedRow[props.column.field]}} <!--insert value-->
               </span>              
           </template> 
           </vue-good-table>
