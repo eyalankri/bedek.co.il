@@ -1,42 +1,51 @@
 <template>
   <div class="container">
     <!-- add-building -->
-    <div class="add-building">
-      <div class="title-container hand" @click="toggleExpande('add')">
-        <span class="title">הוסף בניין</span>
-        <i class="material-icons" v-if="expandMoreAdd">expand_more</i>
-        <i class="material-icons" v-if="!expandMoreAdd">expand_less</i>
-      </div>
-      <div v-show="expandMoreAdd">
-        <form class="col s12">
-          <div class="row">
-            <div class="input-field col s12 m6">
-              <input id="projectName" name="projectName" type="text" v-model="projectName" />
-              <label for="projectName">שם הפרוייקט</label>
-            </div>
-            <div class="input-field col s12 m6">
-              <input id="city" name="city" type="text" v-model="city" />
-              <label for="city">* עיר</label>
-            </div>
-            <div class="input-field col s12 m6">
-              <input id="street" name="street" type="text" v-model="street" />
-              <label for="street">* רחוב</label>
-            </div>
-            <div class="input-field col s12 m6">
-              <input id="number" name="buildingNumber" type="text" v-model="buildingNumber" />
-              <label for="buildingNumber">* מספר בניין</label>
-            </div>
-          </div>
 
-          <div class="row">
-            <p class="red-text right" v-if="feedback">{{ feedback }}</p>
-            <div class="input-field col s12">
-              <a @click="addBuilding" class="waves-effect waves-light btn right">הוסף בניין</a>
-            </div>
+    <button @click="show" type="button" class="btn btn-danger btn-circle btn-xl">
+      <i style="color:white;font-size:1.5em;font-weight:bold" class="material-icons">add</i>
+    </button>
+
+    <modal name="modal">
+
+      <i class="material-icons" @click="hide" style="cursor:pointer">close</i>
+      <div class="modal-padding">
+        
+      <h3>הוסף בניין</h3>
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s12 m6">
+            <input id="projectName" name="projectName" type="text" v-model="projectName" />
+            <label for="projectName">שם הפרוייקט</label>
           </div>
-        </form>
+          <div class="input-field col s12 m6">
+            <input id="city" name="city" type="text" v-model="city" />
+            <label for="city">* עיר</label>
+          </div>
+          <div class="input-field col s12 m6">
+            <input id="street" name="street" type="text" v-model="street" />
+            <label for="street">* רחוב</label>
+          </div>
+          <div class="input-field col s12 m6">
+            <input id="number" name="buildingNumber" type="text" v-model="buildingNumber" />
+            <label for="buildingNumber">* מספר בניין</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <p class="red-text right" v-if="feedback">{{ feedback }}</p>
+          <div class="input-field col s12">
+            <a @click="addBuilding" class="waves-effect waves-light btn right">הוסף בניין</a>
+          </div>
+           <div class="progress" v-if="progressBar" style="margin-top:30px;">
+              <div class="indeterminate"></div>
+            </div>
+        </div>
+        
+      </form>
       </div>
-    </div>
+    </modal>
+
     <!-- /add-building -->
     <!-- list-buildings -->
     <div class="list-buildings">
@@ -75,6 +84,7 @@ export default {
   components: { VueGoodTable },
   data() {
     return {
+      progressBar: null,
       expandMoreAdd: false,
       expandMoreList: true,
       feedback: null,
@@ -85,14 +95,13 @@ export default {
       buildingId: null,
       newBuilding: [],
       buildings: [],
-       
 
       rows: [],
       columns: [
         {
           label: "Id",
           field: "buildingId",
-           type: 'number',
+          type: "number"
         },
         {
           label: "פרוייקט",
@@ -134,6 +143,12 @@ export default {
     this.listBuildings();
   },
   methods: {
+    show() {
+      this.$modal.show("modal");
+    },
+    hide() {
+      this.$modal.hide("modal");
+    },
     toggleExpande(area) {
       if (area == "add") {
         this.expandMoreAdd = !this.expandMoreAdd;
@@ -144,6 +159,7 @@ export default {
     },
     addBuilding() {
       this.feedback = "";
+      this.progressBar = true;
 
       if (!this.city) {
         this.feedback = "יש לרשום עיר.";
@@ -177,6 +193,8 @@ export default {
           this.buildingNumber = null;
           this.projectName = null;
 
+          this.feedback = "נשמר בהצלחה!";
+          this.progressBar = null;
           var table = $("#buildings").DataTable();
           table.destroy(); // must destroy before calling again
           this.listBuildings();
@@ -213,19 +231,15 @@ export default {
               name: "handymanInBuilding",
               params: { buildingId: el.buildingId }
             }).href;
-             el.serviceInHandymanInBuilding = `<a href='${link}'><i class="material-icons">gavel</i></a>`;
+            el.serviceInHandymanInBuilding = `<a href='${link}'><i class="material-icons">gavel</i></a>`;
           });
-         
 
           this.rows = response.data;
-
-           
         })
         .catch(error => {
           console.log(error);
         });
-    },
-   
+    }
   }
 };
 </script>
@@ -233,9 +247,6 @@ export default {
  
 
 <style>
- 
- 
- 
 div.dt-button-info {
   position: fixed;
   top: 50%;

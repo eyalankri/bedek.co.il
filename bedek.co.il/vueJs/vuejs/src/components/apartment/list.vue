@@ -3,7 +3,7 @@
     <div class="container">
       <button @click="show" type="button" class="btn btn-danger btn-circle btn-xl"><i style="color:white;font-size:1.5em;font-weight:bold" class="material-icons">add</i></button>
       
-      <modal name="add-apprtment">
+      <modal name="modal">
         <i class="material-icons" @click="hide" style="cursor:pointer">close</i>
           <addUpdateApartment
             v-on:loadApartmentList="refreshListAppartments()"
@@ -113,10 +113,10 @@ export default {
   methods: {
     show() {
       $('.ProseMirror').text('');      
-      this.$modal.show("add-apprtment");
+      this.$modal.show("modal");
     },
     hide() {
-      this.$modal.hide("add-apprtment");
+      this.$modal.hide("modal");
     },
     loadBuildingInfo() {
       axios
