@@ -8,7 +8,7 @@ namespace api.Dtos
         public string ServiceName { get; set; }
         public int WarrantyPeriodInMonths { get; set; }
         public Guid? UserId { get; set; }
-        public string InsertOrDelete { get; set; }
+        public bool RemoveAll { get; set; }
 
     }
 }

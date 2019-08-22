@@ -119,7 +119,7 @@ export default {
         var chkElm = $("#" + el.userId + "_" + el.serviceId);
         $(chkElm).prop("checked", true);
 
-        var obj = {
+        let obj = {
           UserId: el.userId,
           FirstName: el.firstName,
           LastName: el.lastName,
@@ -145,7 +145,7 @@ export default {
         });
     },
     loadServiceInHandymanInBuilding() {
-      console.clear();
+       
       this.rows = [];
       axios
         .get(

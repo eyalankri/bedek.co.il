@@ -1,6 +1,6 @@
 <template>
   <div class="navbar" style="display:block">
-    <nav class="teal darken-4">
+    <nav class="black">
       <div class="container1">
         <div class="row">
           <div class="col s3">
@@ -13,7 +13,7 @@
             </router-link>
           </div>
           <div class="col s6">
-            <ul id="nav-mobile" class="left hide-on-med-and-down">
+            <ul id="nav-mobile" class="nav-links">
              
               <li>
                  <router-link :to="{name: 'buildings'}">בניינים </router-link>
@@ -27,7 +27,7 @@
             </ul>
           </div>
           <div class="col s3">
-            <ul class="left">
+            <ul class="left nav-links">
               <li v-if="!user">
                 <router-link :to="{name: 'Login'}">התחבר</router-link>
               </li>
@@ -74,6 +74,9 @@ export default {
 </script>
 
 <style>
+.nav-links{
+      padding-top: 18px;
+}
 .navbar .brand-logo {
   position: relative;
 }

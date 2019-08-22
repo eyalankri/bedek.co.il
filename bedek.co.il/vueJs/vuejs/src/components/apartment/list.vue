@@ -1,16 +1,18 @@
 <template>
   <div>
-    <div class="container title-container hand" @click="toggleExpande('add')">
-      <span class="title">הוסף דירה חדשה</span>
-      <i class="material-icons" v-if="expandMoreAdd">expand_more</i>
-      <i class="material-icons" v-if="!expandMoreAdd">expand_less</i>
+    <div class="container">
+      <button @click="show" type="button" class="btn btn-danger btn-circle btn-xl"><i style="color:white;font-size:1.5em;font-weight:bold" class="material-icons">add</i></button>
+      
+      <modal name="add-apprtment">
+        <i class="material-icons" @click="hide" style="cursor:pointer">close</i>
+          <addUpdateApartment
+            v-on:loadApartmentList="refreshListAppartments()"
+            :propIsFromListApartment="true"
+          />
+        
+      </modal>
     </div>
-    <div v-show="expandMoreAdd">
-      <addUpdateApartment
-        v-on:loadApartmentList="refreshListAppartments()"
-        :propIsFromListApartment="true"
-      />
-    </div>
+
     <div class="container">
       <!-- list-buildings -->
       <div class="list-buildings">
@@ -19,7 +21,7 @@
           <i class="material-icons" v-if="expandMoreList">expand_more</i>
           <i class="material-icons" v-if="!expandMoreList">expand_less</i>
         </div>
-        <div v-show="expandMoreList" >
+        <div v-show="expandMoreList">
           <div id="vgt">
             <vue-good-table
               :columns="columns"
@@ -27,10 +29,9 @@
               :rtl="true"
               :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
               :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
-              styleClass="vgt-table condensed">
+              styleClass="vgt-table condensed"
+            >
               <div slot="emptystate">אין נתונים בטבלה</div>
-
-               
             </vue-good-table>
           </div>
         </div>
@@ -47,17 +48,19 @@ import "vue-good-table/dist/vue-good-table.css";
 import { VueGoodTable } from "vue-good-table";
 import moment from "moment";
 import addUpdateApartment from "@/components/apartment/add-update";
+ 
 
 export default {
   name: "AppartmentList",
-  components: {    
+  components: {
     addUpdateApartment,
-    VueGoodTable
+    VueGoodTable,
+     
   },
 
   data() {
     return {
-      dataset: [],
+       
       expandMoreAdd: false,
       expandMoreList: true,
       feedback: null,
@@ -103,17 +106,25 @@ export default {
     };
   },
   mounted() {
+    
     this.loadBuildingInfo();
     this.listApartments();
   },
   methods: {
+    show() {
+      $('.ProseMirror').text('');      
+      this.$modal.show("add-apprtment");
+    },
+    hide() {
+      this.$modal.hide("add-apprtment");
+    },
     loadBuildingInfo() {
       axios
         .get(
           process.env.ROOT_API +
             "building/Get?buildingId=" +
-            this.$route.params.id,
-          this.$store.getters.getTokenHeader
+             this.$route.params.id,
+             this.$store.getters.getTokenHeader
         )
         .then(res => {
           this.progressBar = false;
@@ -143,17 +154,17 @@ export default {
       }
     },
     listApartments() {
-
       axios
         .get(
-          process.env.ROOT_API + "Apartment/List?buildingId=" + 
-          this.buildingId,
+          process.env.ROOT_API + "Apartment/List?buildingId=" + this.buildingId,
           this.$store.getters.getTokenHeader
         )
-        .then(res => {          
-          console.log(res.data)
+        .then(res => {
+          console.log(res.data);
           res.data.forEach(res => {
-            res.dateOfEntrance = moment(res.dateOfEntrance).format("DD/MM/YYYY");
+            res.dateOfEntrance = moment(res.dateOfEntrance).format(
+              "DD/MM/YYYY"
+            );
             res.show = `<a href='/${
               this.$router.resolve({
                 name: "showApartment",
@@ -161,15 +172,13 @@ export default {
               }).href
             }'><i class="material-icons">perm_identity</i></a>`;
           });
-         
-         this.rows = res.data;
 
+          this.rows = res.data;
         })
         .catch(error => {
           console.log("loadBuildingInfo: " + error);
         });
-    },
-    
+    }
   }
 };
 </script>

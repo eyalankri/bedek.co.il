@@ -103,30 +103,40 @@ namespace api.Controllers
         [HttpPost]
         [Route("Update")]
         [EnableCors("MyPolicy")]
-        public IActionResult Update([FromBody] ServiceInHandymanDto dto)
+        public IActionResult Update([FromBody] ServiceInHandymanDto[] listDto)
         {
-            var model = _mapper.Map<ServiceInHandyman>(dto);
-            if (!ModelState.IsValid) return BadRequest();
 
-            if (dto.InsertOrDelete=="insert")
+            try
             {
-                var entity = _db.ServiceInUser.Find(model.ServiceId, model.UserId);
-                if (entity == null)
-                {
-                    _db.Add(model);
-                    _db.SaveChanges();
-                }
-            }
-            else if (dto.InsertOrDelete == "delete")
-            {
-                _db.Remove(model);
+                if (!ModelState.IsValid) return BadRequest();
+
+                _db.ServiceInUser.RemoveRange(_db.ServiceInUser.Where(x => x.UserId == listDto.FirstOrDefault().UserId));
                 _db.SaveChanges();
+
+                if (! listDto.FirstOrDefault().RemoveAll) // all the services removed from user. don't insert
+                {
+                    foreach (var dto in listDto)
+                    {
+                        var entity = _mapper.Map<ServiceInHandyman>(dto);
+                        _db.Add(entity);
+                        _db.SaveChanges();
+
+
+                    }
+                }
+                
+
             }
+            catch (Exception ex)
+            {
 
-           
+                var x = ex.ToString();
+                throw;
+            }
+            
+             
 
-
-            return Ok(model);
+            return Ok();
         }
     }
 }

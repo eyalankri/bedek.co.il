@@ -3,6 +3,7 @@
     <Navbar/>
     <InfoBar />
     <router-view/>
+    
   </div>
 </template>
 

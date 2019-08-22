@@ -1,62 +1,52 @@
 <template>
   <div class="create-appartment">
-    <div class="container">
+    <div class="container" style="text-align:right">
+      <h3 st>הוסף דירה</h3>
       <div class="row">
         <form class="col s12">
           <div class="row">
-            <div class="input-field col s3">
-              <input id="apartmentNumber" type="number" v-model="apartmentNumber">
+            <div class="input-field col s6">
+              <input id="apartmentNumber" type="number" v-model="apartmentNumber" />
               <label for="apartmentNumber">מספר דירה</label>
             </div>
-            <div class="input-field col s3">
-              <input id="dateOfEntrance" type="text" class="datepicker">
+            <div class="input-field col s6">
+              <input id="dateOfEntrance" type="text" class="datepicker" />
               <label for="dateOfEntrance">תאריך כניסה</label>
             </div>
-             <div class="input-field col s12">               
-               <span style="color:#9e9e9e" for="tiptap">הערות לדירה</span>
-            
-            
+            <div class="input-field col s12">
+              <span style="color:#9e9e9e" for="tiptap">הערות לדירה</span>
 
-
-
-
-            <!-- sendContent in the child / getContentFromEditor is belllow-->
-            <tiptap id="tiptap" ref="tiptap" :editorContent="this.apartmentComment"></tiptap>
-
-
-
-
-
-
+              <!-- sendContent in the child / getContentFromEditor is belllow-->
+              <tiptap id="tiptap" ref="tiptap" :editorContent="this.apartmentComment"></tiptap>
             </div>
           </div>
           <div class="row">
             <b>פרטי הדייר:</b>
-            <input type="hidden" v-model="userId">
+            <input type="hidden" v-model="userId" />
           </div>
           <div class="row">
-            <div class="input-field col s6 m4 l3">
-              <input id="firstName" type="text" v-model="firstName">
+            <div class="input-field col s12 m4 4">
+              <input id="firstName" type="text" v-model="firstName" />
               <label for="firstName">שם פרטי</label>
             </div>
-            <div class="input-field col s6 m4 l3">
-              <input id="lastName" type="text" v-model="lastName">
+            <div class="input-field col s12 m4 4">
+              <input id="lastName" type="text" v-model="lastName" />
               <label for="lastName">שם משפחה</label>
             </div>
-            <div class="input-field col s6 m4 l2">
-              <input id="phone1" type="tel" v-model="phone1">
+            <div class="input-field col s12 m4 4">
+              <input id="phone1" type="tel" v-model="phone1" />
               <label for="phone1">טלפון 1:</label>
             </div>
-            <div class="input-field col s6 m4 l2">
-              <input id="phone2" type="tel" v-model="phone2">
+            <div class="input-field col s12 m4 4">
+              <input id="phone2" type="tel" v-model="phone2" />
               <label for="phone2">טלפון 2:</label>
             </div>
-            <div class="input-field col s6 m4 l2">
-              <input id="identityCardId" type="text" v-model="identityCardId">
+            <div class="input-field col s12 m4 4">
+              <input id="identityCardId" type="text" v-model="identityCardId" />
               <label for="identityCardId">תעודת זהות</label>
             </div>
-            <div class="input-field col s12 m8 l6">
-              <input id="email" type="email" v-model="email" class="ltr">
+            <div class="input-field col s12 m4 4">
+              <input id="email" type="email" v-model="email" class="ltr" />
               <label for="email">אימייל</label>
             </div>
           </div>
@@ -72,7 +62,7 @@
                 v-if="this.isForUpdatingApartment"
                 @click="updateApartment"
                 class="waves-effect waves-light btn right"
-              >עדכן דירה</a>              
+              >עדכן דירה</a>
             </div>
             <div class="progress" v-if="progressBar" style="margin-top:30px;">
               <div class="indeterminate"></div>
@@ -89,13 +79,12 @@
 import axios from "axios";
 import moment from "moment";
 
-import tiptap from '@/components/utilities/tiptap';
-
+import tiptap from "@/components/utilities/tiptap";
 
 export default {
   name: "AppartmentAdd",
   components: {
-      tiptap,
+    tiptap
   },
   props: ["propIsFromListApartment", "propApartmentId"],
   data() {
@@ -117,16 +106,16 @@ export default {
       dateOfEntrance: null,
 
       apartmentComment: null,
-      residentComment:null
+      residentComment: null,
     };
   },
 
   mounted() {
+    
     this.isForAddingApartment = this.propIsFromListApartment;
     this.isForUpdatingApartment = !this.propIsFromListApartment;
 
     this.initializeDatePicker();
-    
 
     if (this.propApartmentId != null) {
       this.apartmentId = this.propApartmentId;
@@ -137,13 +126,10 @@ export default {
     if (this.isForUpdatingApartment == true) {
       this.loadApartmentInfo();
     }
-    
-    
- 
   },
   methods: {
-    getContentFromEditor(html){
-     this.apartmentComment = html;
+    getContentFromEditor(html) {
+      this.apartmentComment = html;
     },
     validateInputes() {
       if (!this.apartmentNumber) {
@@ -184,9 +170,10 @@ export default {
       // also get the building info
       axios
         .get(
-       process.env.ROOT_API + "Apartment/Get?apartmentId=" +
+          process.env.ROOT_API +
+            "Apartment/Get?apartmentId=" +
             this.apartmentId,
-             this.$store.getters.getTokenHeader
+          this.$store.getters.getTokenHeader
         )
         .then(res => {
           this.progressBar = false;
@@ -198,16 +185,17 @@ export default {
           let street = res.data.street;
           let buildingNumber = res.data.buildingNumber;
 
-          this.$store.commit("setInfoBarText",`${projectName}: ${street} ${buildingNumber}, ${city}`);
-          
-
+          this.$store.commit(
+            "setInfoBarText",
+            `${projectName}: ${street} ${buildingNumber}, ${city}`
+          );
 
           this.apartmentNumber = res.data.apartmentNumber;
-          $(".datepicker").val(moment(res.data.dateOfEntrance).format("DD/MM/YYYY"));
-          this.$store.commit('setApartmentComment', res.data.comment)
-          
-          
-     
+          $(".datepicker").val(
+            moment(res.data.dateOfEntrance).format("DD/MM/YYYY")
+          );
+          this.$store.commit("setApartmentComment", res.data.comment);
+
           this.userId = res.data.user.userId;
           this.firstName = res.data.user.firstName;
           this.lastName = res.data.user.lastName;
@@ -218,26 +206,27 @@ export default {
           this.email = res.data.user.email;
 
           $("label").addClass("active"); // will move the placeholder
-          this.$emit('sendBuildingId', this.buildingId);
-          
+          this.$emit("sendBuildingId", this.buildingId);
         })
         .catch(error => {
           console.log("loadApartmentInfo() :" + error);
         });
     },
-    addApartment() {      
+    addApartment() {
       this.dateOfEntrance = $(".datepicker").val();
       this.feedback = "";
 
       var isValid = this.validateInputes();
       if (!isValid) return false;
-    
-    this.progressBar = true;    
+
+      this.progressBar = true;
       let data = {
         BuildingId: this.$route.params.id,
-        DateOfEntrance: moment(moment(this.dateOfEntrance, 'DD-MM-YYYY')).format('MM-DD-YYYY'),
+        DateOfEntrance: moment(
+          moment(this.dateOfEntrance, "DD-MM-YYYY")
+        ).format("MM-DD-YYYY"),
         ApartmentNumber: this.apartmentNumber,
-        Comment:   this.$store.state.apartmentComment,
+        Comment: this.$store.state.apartmentComment,
         User: {
           FirstName: this.firstName,
           LastName: this.lastName,
@@ -247,7 +236,7 @@ export default {
           Phone2: this.phone2,
           IsAcceptEmails: true
         }
-      }     
+      };
       axios
         .post(
           process.env.ROOT_API + "Apartment/Add",
@@ -268,14 +257,12 @@ export default {
           this.identityCardId = null;
           this.phone1 = null;
           this.phone2 = null;
-        $('.ProseMirror').html('') // clear the tiptap editor
-          
-
+          $(".ProseMirror").html(""); // clear the tiptap editor
 
           this.emitApartmentList();
         })
         .catch(error => {
-          console.log("loadApartmentInfo() :" + error)
+          console.log("loadApartmentInfo() :" + error);
         });
     },
     updateApartment() {
@@ -291,7 +278,7 @@ export default {
         ApartmentId: this.$route.params.id,
         DateOfEntrance: this.dateOfEntrance,
         ApartmentNumber: this.apartmentNumber,
-        Comment:   this.$store.state.apartmentComment,
+        Comment: this.$store.state.apartmentComment,
         User: {
           UserId: this.userId,
           FirstName: this.firstName,
@@ -319,8 +306,7 @@ export default {
             name: "Login"
           });
         });
-    },
-   
+    }
   }
 };
 </script>
