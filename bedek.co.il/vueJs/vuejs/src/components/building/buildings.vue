@@ -7,48 +7,48 @@
     </button>
 
     <modal name="modal">
-
       <i class="material-icons" @click="hide" style="cursor:pointer">close</i>
       <div class="modal-padding">
-        
-      <h3>הוסף בניין</h3>
-      <form class="col s12">
-        <div class="row">
-          <div class="input-field col s12 m6">
-            <input id="projectName" name="projectName" type="text" v-model="projectName" />
-            <label for="projectName">שם הפרוייקט</label>
+        <h3>הוסף בניין</h3>
+        <form class="col s12">
+          <div class="row">
+            <div class="input-field col s12 m6">
+              <input id="projectName" name="projectName" type="text" v-model="projectName" />
+              <label for="projectName">שם הפרוייקט</label>
+            </div>
+            <div class="input-field col s12 m6">
+              <input id="city" name="city" type="text" v-model="city" />
+              <label for="city">* עיר</label>
+            </div>
+            <div class="input-field col s12 m6">
+              <input id="street" name="street" type="text" v-model="street" />
+              <label for="street">* רחוב</label>
+            </div>
+            <div class="input-field col s12 m6">
+              <input id="number" name="buildingNumber" type="text" v-model="buildingNumber" />
+              <label for="buildingNumber">* מספר בניין</label>
+            </div>
           </div>
-          <div class="input-field col s12 m6">
-            <input id="city" name="city" type="text" v-model="city" />
-            <label for="city">* עיר</label>
-          </div>
-          <div class="input-field col s12 m6">
-            <input id="street" name="street" type="text" v-model="street" />
-            <label for="street">* רחוב</label>
-          </div>
-          <div class="input-field col s12 m6">
-            <input id="number" name="buildingNumber" type="text" v-model="buildingNumber" />
-            <label for="buildingNumber">* מספר בניין</label>
-          </div>
-        </div>
 
-        <div class="row">
-          <p class="red-text right" v-if="feedback">{{ feedback }}</p>
-          <div class="input-field col s12">
-            <a @click="addBuilding" class="waves-effect waves-light btn right">הוסף בניין</a>
-          </div>
-           <div class="progress" v-if="progressBar" style="margin-top:30px;">
+          <div class="row">
+            <p class="red-text right" v-if="feedback">{{ feedback }}</p>
+            <div class="input-field col s12">
+              <a @click="addBuilding" class="waves-effect waves-light btn right">הוסף בניין</a>
+            </div>
+            <div class="progress" v-if="progressBar" style="margin-top:30px;">
               <div class="indeterminate"></div>
             </div>
-        </div>
-        
-      </form>
+          </div>
+        </form>
       </div>
     </modal>
 
     <!-- /add-building -->
     <!-- list-buildings -->
     <div class="list-buildings">
+      <div class="progress" v-if="progressBar" style="margin-top:30px;">
+        <div class="indeterminate"></div>
+      </div>
       <div class="title-container hand" @click="toggleExpande('list')">
         <span class="title">בניינים קיימים</span>
         <i class="material-icons" v-if="expandMoreList">expand_more</i>
@@ -206,6 +206,8 @@ export default {
         });
     },
     listBuildings() {
+
+      this.progressBar = true;
       axios
         .get(
           process.env.ROOT_API + "Building/List",
@@ -235,6 +237,8 @@ export default {
           });
 
           this.rows = response.data;
+
+          this.progressBar = null;
         })
         .catch(error => {
           console.log(error);

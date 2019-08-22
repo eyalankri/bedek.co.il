@@ -1,21 +1,25 @@
 <template>
   <div>
     <div class="container">
-      <button @click="show" type="button" class="btn btn-danger btn-circle btn-xl"><i style="color:white;font-size:1.5em;font-weight:bold" class="material-icons">add</i></button>
-      
+      <button @click="show" type="button" class="btn btn-danger btn-circle btn-xl">
+        <i style="color:white;font-size:1.5em;font-weight:bold" class="material-icons">add</i>
+      </button>
+
       <modal name="modal">
         <i class="material-icons" @click="hide" style="cursor:pointer">close</i>
-          <addUpdateApartment
-            v-on:loadApartmentList="refreshListAppartments()"
-            :propIsFromListApartment="true"
-          />
-        
+        <addUpdateApartment
+          v-on:loadApartmentList="refreshListAppartments()"
+          :propIsFromListApartment="true"
+        />
       </modal>
     </div>
 
     <div class="container">
       <!-- list-buildings -->
       <div class="list-buildings">
+        <div class="progress" v-if="progressBar" style="margin-top:30px;">
+          <div class="indeterminate"></div>
+        </div>
         <div class="title-container hand" @click="toggleExpande('list')">
           <span class="title">דירות:</span>
           <i class="material-icons" v-if="expandMoreList">expand_more</i>
@@ -48,19 +52,16 @@ import "vue-good-table/dist/vue-good-table.css";
 import { VueGoodTable } from "vue-good-table";
 import moment from "moment";
 import addUpdateApartment from "@/components/apartment/add-update";
- 
 
 export default {
   name: "AppartmentList",
   components: {
     addUpdateApartment,
-    VueGoodTable,
-     
+    VueGoodTable
   },
 
   data() {
     return {
-       
       expandMoreAdd: false,
       expandMoreList: true,
       feedback: null,
@@ -106,13 +107,12 @@ export default {
     };
   },
   mounted() {
-    
     this.loadBuildingInfo();
     this.listApartments();
   },
   methods: {
     show() {
-      $('.ProseMirror').text('');      
+      $(".ProseMirror").text("");
       this.$modal.show("modal");
     },
     hide() {
@@ -123,8 +123,8 @@ export default {
         .get(
           process.env.ROOT_API +
             "building/Get?buildingId=" +
-             this.$route.params.id,
-             this.$store.getters.getTokenHeader
+            this.$route.params.id,
+          this.$store.getters.getTokenHeader
         )
         .then(res => {
           this.progressBar = false;
@@ -154,6 +154,8 @@ export default {
       }
     },
     listApartments() {
+      this.progressBar = true;
+
       axios
         .get(
           process.env.ROOT_API + "Apartment/List?buildingId=" + this.buildingId,
@@ -174,6 +176,7 @@ export default {
           });
 
           this.rows = res.data;
+          this.progressBar = null;
         })
         .catch(error => {
           console.log("loadBuildingInfo: " + error);

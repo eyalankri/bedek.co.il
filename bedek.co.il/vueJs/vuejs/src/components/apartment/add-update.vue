@@ -1,7 +1,8 @@
 <template>
   <div class="create-appartment">
     <div class="container" style="text-align:right">
-      <h3 st>הוסף דירה</h3>
+      <h3 v-if="this.isForAddingApartment">הוסף דירה</h3>
+      <h3 v-if="this.isForUpdatingApartment">עדכן פרטי דירה</h3>
       <div class="row">
         <form class="col s12">
           <div class="row">
@@ -266,6 +267,10 @@ export default {
         });
     },
     updateApartment() {
+      var isConfirmed = confirm("האם לעדכן את פרטי הדירה?");
+      if (!isConfirmed) {
+        return false;
+      }
       let dateString = $("#dateOfEntrance").val();
       let momentObj = moment(dateString, "DD/MM/YYYY");
       this.dateOfEntrance = momentObj.format("MM/DD/YYYY");
