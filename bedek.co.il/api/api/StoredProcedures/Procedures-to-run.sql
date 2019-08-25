@@ -87,4 +87,130 @@ GO
 
 -----
 
+-- Add Identity to ServiceInHandymanInBuilding And Create Unique
+ALTER TABLE ServiceInHandymanInBuilding
+ADD ServiceInHandymanInBuildingId INT IDENTITY(1,1)
+GO
+CREATE UNIQUE NONCLUSTERED INDEX IX_BuildingId_ServiceId_UserId
+   ON ServiceInHandymanInBuilding (BuildingId, ServiceId, UserId);
+   
+   
+ USE [Bedek]
+GO
 
+/****** Object:  Table [dbo].[ServiceCall]    Script Date: 24/08/2019 09:19:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ServiceCall](
+	[ServiceCallId] [uniqueidentifier] NOT NULL,
+	[ApartmentId] [int] NOT NULL,
+	[DateCreated] [datetime] NOT NULL,
+	[DateUpdated] [datetime] NOT NULL,
+	[Status] [nvarchar](50) NOT NULL,
+	[ServiceCallDocId] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_ServiceCall] PRIMARY KEY CLUSTERED 
+(
+	[ServiceCallId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ServiceCall] ADD  CONSTRAINT [DF_ServiceCall_ServiceCallId]  DEFAULT (newid()) FOR [ServiceCallId]
+GO
+
+ALTER TABLE [dbo].[ServiceCall] ADD  CONSTRAINT [DF_ServiceCall_Status]  DEFAULT (N'פתוחה') FOR [Status]
+GO
+
+ALTER TABLE [dbo].[ServiceCall]  WITH CHECK ADD  CONSTRAINT [FK_ServiceCall_Apartments] FOREIGN KEY([ApartmentId])
+REFERENCES [dbo].[Apartments] ([ApartmentId])
+GO
+
+ALTER TABLE [dbo].[ServiceCall] CHECK CONSTRAINT [FK_ServiceCall_Apartments]
+GO
+
+
+
+USE [Bedek]
+GO
+
+/****** Object:  Table [dbo].[ServiceCallDoc]    Script Date: 24/08/2019 09:17:12 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ServiceCallDoc](
+	[ServiceCallDocId] [uniqueidentifier] NOT NULL,
+	[ServiceCallId] [uniqueidentifier] NOT NULL,
+	[DocDescription] [nvarchar](max) NULL,
+	[FileName] [nvarchar](200) NOT NULL,
+	[FileContentType] [varchar](100) NOT NULL,
+	[ServiceInHandymanInBuildingId] [int] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ServiceCallDoc]  WITH CHECK ADD  CONSTRAINT [FK_ServiceCallDoc_ServiceCall] FOREIGN KEY([ServiceCallId])
+REFERENCES [dbo].[ServiceCall] ([ServiceCallId])
+GO
+
+ALTER TABLE [dbo].[ServiceCallDoc] CHECK CONSTRAINT [FK_ServiceCallDoc_ServiceCall]
+GO
+
+ALTER TABLE [dbo].[ServiceCallDoc]  WITH CHECK ADD  CONSTRAINT [FK_ServiceCallDoc_ServiceInHandymanInBuilding] FOREIGN KEY([ServiceInHandymanInBuildingId])
+REFERENCES [dbo].[ServiceInHandymanInBuilding] ([ServiceInHandymanInBuildingId])
+GO
+
+ALTER TABLE [dbo].[ServiceCallDoc] CHECK CONSTRAINT [FK_ServiceCallDoc_ServiceInHandymanInBuilding]
+GO
+
+USE [Bedek]
+GO
+/****** Object:  StoredProcedure [dbo].[ServiceInHandymanInBuilding_Select_BuildingId]    Script Date: 24/08/2019 22:28:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create  PROCEDURE [dbo].[ServiceInHandymanInBuildingInServiceCall_Select_BuildingId-ServiceCallId]
+	@BuildingId INT,
+	@ServiceCallId UNIQUEIDENTIFIER
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT s.ServiceId,
+	       s.ServiceName,
+	       s.WarrantyPeriodInMonths,
+	       s.IsEnable,
+	       u.UserId,
+	       u.FirstName,
+	       u.LastName,
+	       u.Email,
+	       u.[Password],
+	       u.Phone1,
+	       u.Phone2,
+	       u.IdentityCardId,
+	       u.IsAcceptEmails,
+	       u.DateRegistered,
+	       u.Company,
+	       uib.BuildingId -- null if not in ServiceInHandymanInBuilding
+	       
+	FROM   [Service]                 AS s
+	       INNER JOIN ServiceInUser  AS siu
+	            ON  s.ServiceId = siu.ServiceId
+	       INNER JOIN [User]         AS u
+	            ON  u.UserId = siu.UserId
+	       INNER JOIN ServiceInHandymanInBuilding AS uib
+	            ON  uib.UserId = u.UserId
+	            AND uib.ServiceId = s.ServiceId
+	            AND uib.BuildingId = @BuildingId	   
+	        LEFT JOIN ServiceInHandymanInBuildingInServiceCall AS sihibisc
+				ON  sihibisc.ServiceInHandymanInBuildingId = uib.ServiceInHandymanInBuildingId
+				AND  sihibisc.ServiceCallId = @ServiceCallId
+	ORDER BY
+	       s.ServiceName,u.Company
+END

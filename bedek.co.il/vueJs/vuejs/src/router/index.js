@@ -20,7 +20,9 @@ import handymanInBuilding from '@/components/HandymanInBuilding/list';
 
 import serviceList      from '@/components/service/list';
 import addUpdateService from '@/components/service/add-update';
-import tiptap from '@/components/utilities/tiptap';
+
+import serviceCall      from '@/components/serviceCall/main';
+
 
 
 import axios from "axios";
@@ -38,14 +40,17 @@ const router = new Router({
       }
     },
     {
-      path: '/tiptap',
-      name: 'tiptap',
-      component: tiptap
-    },
-    {
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/service-call/main/:apartmentId?',
+      name: 'serviceCall',
+      component: serviceCall,
+      props: true,
+      params: null,
+      meta: { requiresAuth: true}
     },
     {
       path: '/service/list',

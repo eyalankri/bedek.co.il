@@ -1,6 +1,6 @@
 <template>
-    <div>
-        Redirecting...
+    <div class="container">
+        <h1>המתן...</h1>
     </div>
 </template>
 
