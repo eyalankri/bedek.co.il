@@ -70,7 +70,9 @@ export default {
           localStorage.setItem("user-token", this.token);
           this.$store.commit('setLoggedInUser', this.email)    
 
+            console.clear()
            $('.navbar').show();
+
            
           this.$router.push({
             name: "buildings"

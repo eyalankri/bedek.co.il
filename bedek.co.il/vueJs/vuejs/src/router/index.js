@@ -45,7 +45,7 @@ const router = new Router({
       component: Login
     },
     {
-      path: '/service-call/main/:apartmentId?',
+      path: '/service-call/:apartmentId?',
       name: 'serviceCall',
       component: serviceCall,
       props: true,

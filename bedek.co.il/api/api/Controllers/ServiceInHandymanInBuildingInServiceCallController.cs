@@ -4,14 +4,22 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Enums;
 using api.Models;
 using AutoMapper;
-using AutoMapper.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
+
 namespace api.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+
     public class ServiceInHandymanInBuildingInServiceCallController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -28,8 +36,9 @@ namespace api.Controllers
         [HttpGet]
         [Route("List")]
         [EnableCors("MyPolicy")]
-        public List<ServiceInHandymanInBuildingInServiceCallDto> List(int buildingId)
+        public List<ServiceInHandymanInBuildingInServiceCallDto> List(int apartmentId, Guid? serviceCallId)
         {
+            //Guid? serviceCallId;
             var connStr = _configuration.GetConnectionString("DefaultConnection");
 
             var list = new List<ServiceInHandymanInBuildingInServiceCallDto>();
@@ -38,11 +47,12 @@ namespace api.Controllers
             {
                 using (var conn = new SqlConnection(connStr))
                 {
-                    using (var cmd = new SqlCommand("[ServiceInHandymanInBuilding_Select_BuildingId]", conn))
+                    using (var cmd = new SqlCommand("[ServiceInHandymanInBuildingInServiceCall_Select_ApartmentId-ServiceCallId]", conn))
                     {
                         conn.Open();
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@BuildingId", buildingId);
+                        cmd.Parameters.AddWithValue("@ApartmentId", apartmentId);
+                        cmd.Parameters.AddWithValue("@ServiceCallId",serviceCallId);
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -50,6 +60,7 @@ namespace api.Controllers
 
                                 list.Add(new ServiceInHandymanInBuildingInServiceCallDto()
                                 {
+                                    ServiceInHandymanInBuildingId = (int)reader["ServiceInHandymanInBuildingId"] ,
                                     UserId = (Guid)reader["UserId"],
                                     FirstName = (string)reader["FirstName"],
                                     LastName = (string)reader["LastName"],
@@ -57,10 +68,11 @@ namespace api.Controllers
                                     ServiceName = (string)reader["ServiceName"],
                                     ServiceId = (int)reader["ServiceId"],
                                     BuildingId = (int)reader["BuildingId"],
-                                    ServiceCallId =  reader["ServiceCallId"] == DBNull.Value ? null : (int?)reader["ServiceCallId"],
-                                    IsAssociated = reader["ServiceCallId"] == DBNull.Value ? false : true,
+                                    ApartmentId =  reader["ApartmentId"] == DBNull.Value ? null : (int?)reader["ApartmentId"],
+                                    IsAssociated = reader["ApartmentId"] == DBNull.Value ? false : true,
 
-                                    
+                                    //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
+                                    //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
                                 }); ;
 
                             }
@@ -78,5 +90,57 @@ namespace api.Controllers
 
         }
 
+
+        [HttpPost]
+        [Route("Add")]
+        [EnableCors("MyPolicy")]
+        public IActionResult Add([FromBody] ServiceCall serviceCallDto, [FromBody] ServiceInHandymanInBuildingInServiceCallDto[] listDto,)
+        {
+            serviceCallDto.Status = ServiceCallStatus.New;
+
+            try
+            {
+
+                var entity = _mapper.Map<ServiceCall>(serviceCallDto);
+                //password using constructor
+
+                if (!ModelState.IsValid) return BadRequest();
+
+                _db.Add(entity);
+                _db.SaveChanges();
+                return Ok(entity);
+
+
+                if (!ModelState.IsValid) return BadRequest();
+
+                _db.ServiceInUser.RemoveRange(_db.ServiceInUser.Where(x => x.UserId == listDto.FirstOrDefault().UserId));
+                _db.SaveChanges();
+
+                if (!listDto.FirstOrDefault().RemoveAll) // all the services removed from user. don't insert
+                {
+                    foreach (var dto in listDto)
+                    {
+                        var entity = _mapper.Map<ServiceInHandyman>(dto);
+                        _db.Add(entity);
+                        _db.SaveChanges();
+
+
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                var x = ex.ToString();
+                throw;
+            }
+
+
+
+            return Ok();
+        }
     }
+}
 }

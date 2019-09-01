@@ -6,7 +6,7 @@ namespace api.Models
 {
     public class ServiceCallDoc
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
         public Guid ServiceCallDocId { get; set; }
         [Required]

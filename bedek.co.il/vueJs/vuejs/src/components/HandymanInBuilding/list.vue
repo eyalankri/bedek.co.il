@@ -9,6 +9,14 @@
         :rtl="true"
         :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
         styleClass="vgt-table condensed"
+        :selectOptions="{
+           enabled: true,
+          selectOnCheckboxOnly: false, // only select when checkbox is clicked instead of the row
+          selectionInfoClass: 'custom-class',
+          selectionText: 'חוקי מכר נבחרו',
+          clearSelectionText: '',
+          disableSelectInfo: true, // disable the select info panel on top
+}"
       >
         <div slot="emptystate">אין נתונים בטבלה</div>
       </vue-good-table>
@@ -103,6 +111,7 @@ export default {
         });
     },
     updateServiceInHandymanInBuilding(params) {
+    
       if (!this.allowUpdate) {
         // when page is loading there is a row selected which calls selectionChanged() which initiate the update.
         // allowUpdate false will block it. only than set to true

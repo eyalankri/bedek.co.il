@@ -175,12 +175,19 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create  PROCEDURE [dbo].[ServiceInHandymanInBuildingInServiceCall_Select_BuildingId-ServiceCallId]
+
+/************************************************************
+ * Last changed by Eyal
+ * Time: 30/08/2019 15:16:25
+ ************************************************************/
+ALTER PROCEDURE [dbo].[ServiceInHandymanInBuildingInServiceCall_Select_BuildingId-ServiceCallId]
 	@BuildingId INT,
 	@ServiceCallId UNIQUEIDENTIFIER
 AS
 BEGIN
 	SET NOCOUNT ON;
+	
+	
 	
 	SELECT s.ServiceId,
 	       s.ServiceName,
@@ -197,8 +204,8 @@ BEGIN
 	       u.IsAcceptEmails,
 	       u.DateRegistered,
 	       u.Company,
-	       uib.BuildingId -- null if not in ServiceInHandymanInBuilding
-	       
+	       uib.BuildingId,
+	       sc.ApartmentId
 	FROM   [Service]                 AS s
 	       INNER JOIN ServiceInUser  AS siu
 	            ON  s.ServiceId = siu.ServiceId
@@ -207,10 +214,17 @@ BEGIN
 	       INNER JOIN ServiceInHandymanInBuilding AS uib
 	            ON  uib.UserId = u.UserId
 	            AND uib.ServiceId = s.ServiceId
-	            AND uib.BuildingId = @BuildingId	   
-	        LEFT JOIN ServiceInHandymanInBuildingInServiceCall AS sihibisc
-				ON  sihibisc.ServiceInHandymanInBuildingId = uib.ServiceInHandymanInBuildingId
-				AND  sihibisc.ServiceCallId = @ServiceCallId
+	            AND uib.BuildingId = @BuildingId
+	       LEFT JOIN ServiceInHandymanInBuildingInServiceCall AS sihibisc
+				ON sihibisc.ServiceInHandymanInBuildingId = uib.ServiceId
+		   LEFT	JOIN ServiceCall AS sc
+				ON SC.ServiceCallId = sihibisc.ServiceCallId
 	ORDER BY
-	       s.ServiceName,u.Company
+	       s.ServiceName,
+	       u.Company
 END
+GO
+
+
+
+--[ServiceInHandymanInBuildingInServiceCall_Select_BuildingId-ServiceCallId] 1,'BCA16CEA-A1D6-4B2E-BD34-7ABC1621680A'

@@ -1,4 +1,3 @@
-
 <template>
   <div class="container">
     <div class="row">
@@ -20,16 +19,14 @@
     <div class="row">
       <div class="col s12 m12">
         סטטוס פנייה:
-       
-          <label>
-            <input class="with-gap" name="group3" type="radio" checked />
-            <span>חדשה</span>
-          </label>
-          <label>
-            <input class="with-gap" name="group3" type="radio" checked />
-            <span>סגורה</span>
-          </label>
-         
+        <label>
+          <input class="with-gap" name="group3" type="radio" checked />
+          <span>חדשה</span>
+        </label>
+        <label>
+          <input class="with-gap" name="group3" type="radio" />
+          <span>סגורה</span>
+        </label>
       </div>
     </div>
     <div class="row">
@@ -43,7 +40,7 @@
         <label for="tiptap-container">מהות הפנייה</label>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="this.serviceCallId">
       <div class="col s12 m6">
         <div class="file-field input-field">
           <div class="btn">
@@ -57,32 +54,38 @@
       </div>
     </div>
     <div class="row">
-        
       <div id="vgt">
-        
         <vue-good-table
-            :columns="columns"
-            :rows="rows"
-            :rtl="true"
-            :search-options="{ enabled: true,placeholder: ' חפש בטבלה ',}"
-            :pagination-options="{ enabled: true, perPage: 10 , perPageDropdown: [50, 100]}"
-            styleClass="vgt-table"
-          >
-            <div slot="emptystate">אין נתונים בטבלה</div>
-            
-          <template slot="table-row" slot-scope="props" styleClass="vgt-table">
-              <span v-if="props.column.field == 'delete'"><a href="javascript:;"><i @click="deleteApartmentDoc(props.row.apartmentDocId, props.row.docDescription)" class="material-icons">delete</i></a></span>
-              <span v-else-if="props.column.field == 'download'" v-html="props.formattedRow[props.column.field]"></span>
-              <span v-else-if="props.column.field == 'show'" v-html="props.formattedRow[props.column.field]"></span>     
-              <span v-else-if="props.column.field == 'docDescription'">{{props.formattedRow[props.column.field]}}</span>
-              <span v-else>
-                {{props.formattedRow[props.column.field]}} <!--insert value-->
-              </span>              
-          </template> 
-          </vue-good-table>
-      </div>
+          @on-selected-rows-change="selectionChanged"
+          :columns="columns"
+          :rows="rows"
+          :search-options="{ enabled: true, placeholder: ' חפש בטבלה ', }"
+          :rtl="true"
+          :pagination-options="{ enabled: true, perPage: 50 , perPageDropdown: [100]}"
+          styleClass="vgt-table condensed"
+          :selectOptions="{
+           enabled: true,
+          selectOnCheckboxOnly: false, // only select when checkbox is clicked instead of the row
+          selectionInfoClass: 'custom-class',
+          selectionText: 'חוקי מכר נבחרו',
+          clearSelectionText: '',
+          disableSelectInfo: true, // disable the select info panel on top
+}"
+        >
+          <div slot="emptystate">אין נתונים בטבלה</div>
 
+          <template slot="table-row" slot-scope="props">
+            <!--  if col name is 'isChecked' -->
+            <span v-if="props.column.field == 'isChecked'">
+              <input :checked="props.row.isChecked" type="checkbox" />
+              <span></span>
+            </span>
+            <span v-else>{{props.formattedRow[props.column.field]}}</span>
+          </template>
+        </vue-good-table>
+      </div>
     </div>
+    <a @click="insertServiceCall" class="waves-effect waves-light btn right">שמור קריאת שירות</a>
   </div>
 </template>
 
@@ -96,6 +99,61 @@ import moment from "moment";
 export default {
   name: "serviceCall",
   components: { VueGoodTable, tiptap },
+  data() {
+    return {
+      progressBar: null,
+      allowUpdate: false,
+      feedback: null,
+      apartmentId: this.$route.params.apartmentId,
+      serviceCallDescription: null,
+      dateOfEntrance: null,
+      buildingId: null,
+      serviceCallId: null,
+      projectName: null,
+      city: null,
+      street: null,
+      buildingNumber: null,
+      apartmentNumber: null,
+      userId: null,
+      firstName: null,
+      lastName: null,
+      phone1: null,
+      phone2: null,
+      identityCardId: null,
+      email: null,
+      arrServiceInHandymanInBuildingId: [],
+      rows: [],
+      columns: [
+        {
+          label: "serviceInHandymanInBuildingId",  
+          field: "serviceInHandymanInBuildingId",
+          type: "number",
+          
+        },
+        {
+          label: "חוק המכר",
+          field: "serviceName"
+        },
+        {
+          label: "חברה",
+          field: "company"
+        },
+        {
+          label: "שם",
+          field: "firstName"
+        },
+        {
+          label: "משפחה",
+          field: "lastName"
+        },
+        {
+          label: "",
+          field: "isChecked",
+          html: true
+        }
+      ]
+    };
+  },
   methods: {
     loadApartmentInfo() {
       // also get the building info
@@ -108,7 +166,7 @@ export default {
         )
         .then(res => {
           this.progressBar = false;
-          console.log(res);
+          console.log(res.data.projectName);
           // set the building info
           this.buildingId = res.data.buildingId;
           this.projectName = res.data.projectName;
@@ -129,39 +187,96 @@ export default {
 
           this.$store.commit(
             "setInfoBarText",
-            `${projectName}: ${street} ${buildingNumber} ${city}.<b>11</b> דירה : ${res.data.apartmentNumber}`
+            `${this.projectName}: ${this.street} ${this.buildingNumber} ${this.city}. דירה : ${res.data.apartmentNumber}`
           );
         })
         .catch(error => {
           console.log("loadApartmentInfo() :" + error);
         });
     },
+    selectionChanged(params) {
+        
+    var arr = [];
+      params.selectedRows.forEach(function(el) {  
+        arr.push(
+          el.serviceInHandymanInBuildingId
+        );        
+      });
+     
+        this.arrServiceInHandymanInBuildingId = arr;
+        console.log(this.arrServiceInHandymanInBuildingId)
+    },
+    insertServiceCall(params) {
+        if (this.arrServiceInHandymanInBuildingId.length == 0) {
+            alert("יש לשייך חוק מכר");
+            return false;
+        }    
+
+      let serviceCall = {
+          ApartmentId : this.apartmentId,
+          //more prop in backend.
+      }
+      let apartmentId = this.apartmentId;
+      console.log(params.selectedRows.length);
+    
+    
+
+      axios
+        .post(
+          process.env.ROOT_API + "ServiceInHandymanInBuilding/Update",
+          listDto,
+          this.$store.getters.getTokenHeader
+        )
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    loadServiceInHandymanInBuildingInServiceCall() {
+      this.rows = [];
+
+      let url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}`;
+      if (this.serviceCallId) {
+        url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}&serviceCallId=${this.serviceCallId}`;
+      }
+
+      axios
+        .get(
+          process.env.ROOT_API + url,
+          this.$store.getters.getTokenHeaderFormData
+        )
+        .then(response => {
+          var cnt = 0;
+          response.data.forEach(el => {
+            el.rowId = cnt;
+            cnt++;
+
+            el.isChecked = el.isAssociated;
+          });
+
+          this.rows = response.data;
+
+          this.allowUpdate = true;
+          this.rows.forEach(el => {
+            if (el.isChecked) {
+              this.$set(this.rows[el.rowId], "vgtSelected", true); 
+              this.allowUpdate = false; // if there are selected rows set allowUpdate=false // because in it will post to the server before any manulally selection
+            }
+          });
+        })
+        .catch(error => {
+          console.log("loadBuildingInfo: " + error);
+        });
+    },
     onFileSelected() {}
   },
-  data() {
-    return {
-      progressBar: null,
-      feedback: null,
-      apartmentId: this.$route.params.apartmentId,
-      serviceCallDescription: null,
-      dateOfEntrance: null,
-      buildingId: null,
-      projectName: null,
-      city: null,
-      street: null,
-      buildingNumber: null,
-      apartmentNumber: null,
-      userId: null,
-      firstName: null,
-      lastName: null,
-      phone1: null,
-      phone2: null,
-      identityCardId: null,
-      email: null
-    };
-  },
+
   mounted() {
     this.loadApartmentInfo();
+    this.loadServiceInHandymanInBuildingInServiceCall();
     this.$store.commit("setInfoBarText", "קריאת שירות");
   }
 };

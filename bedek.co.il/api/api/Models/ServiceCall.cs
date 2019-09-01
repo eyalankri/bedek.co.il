@@ -1,4 +1,5 @@
-﻿using System;
+﻿using api.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,12 +9,12 @@ namespace api.Models
     {
         public ServiceCall()
         {                         
-            DateUpdated = DateTime.Today;            
+            DateUpdated = DateCreated = DateTime.Today;            
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]        
         public Guid ServiceCallId { get; set; }
+
         [Required]
         public int ApartmentId { get; set; }
         [Required]
@@ -21,7 +22,7 @@ namespace api.Models
         [Required]
         public DateTime DateUpdated { get; set; }
         [Required]
-        public string Status { get; set; }
+        public ServiceCallStatus Status { get; set; }
 
     }
 }

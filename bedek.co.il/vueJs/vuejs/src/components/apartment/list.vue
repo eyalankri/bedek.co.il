@@ -74,6 +74,7 @@ export default {
       Phone1: null,
       Phone2: null,
       IentidyCardId: null,
+      progressBar : null,
 
       rows: [],
       columns: [

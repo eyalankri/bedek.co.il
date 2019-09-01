@@ -9,7 +9,10 @@
         </div>
       </div>
       <div v-show="expandMoreDetails">
-        <addUpdateApartments :propApartmentId="this.apartmentId" @sendBuildingId="getBuildingIdFromChild"/>
+        <addUpdateApartments
+          :propApartmentId="this.apartmentId"
+          @sendBuildingId="getBuildingIdFromChild"
+        />
       </div>
     </div>
     <div>
@@ -21,10 +24,17 @@
         </div>
       </div>
       <div v-show="expandMoreDocs">
-        <docs :propApartmentId="this.apartmentId"/>
+        <docs :propApartmentId="this.apartmentId" />
       </div>
     </div>
-     <div class="container">
+    <div class="container">
+      <div class="row">
+        <button type="button" class="btn btn-danger btn-circle btn-xl" @click="createCallService">
+          <i class="material-icons" style="color: white; font-size: 1.5em; font-weight: bold;">add</i>
+        </button>
+      </div>
+    </div>
+    <div class="container">
       <a @click="backToApartmentList" class="waves-effect waves-light btn right">חזרה לרשימת הדירות</a>
     </div>
   </div>
@@ -44,11 +54,17 @@ export default {
     return {
       expandMoreDetails: false,
       expandMoreDocs: false,
-      apartmentId: this.$route.params.id, 
+      apartmentId: this.$route.params.id,
       buildingId: null
     };
   },
   methods: {
+    createCallService() {
+       this.$router.push({
+            name: "serviceCall",
+            params: {apartmentId: this.apartmentId}
+          });
+    },
     toggleExpande(area) {
       if (area == "details") {
         this.expandMoreDetails = !this.expandMoreDetails;
@@ -56,16 +72,16 @@ export default {
       if (area == "docs") {
         this.expandMoreDocs = !this.expandMoreDocs;
       }
-    },    
+    },
     backToApartmentList() {
       this.$router.push({
         name: "listApartment",
         params: { id: this.buildingId }
       });
     },
-    getBuildingIdFromChild(id){
+    getBuildingIdFromChild(id) {
       this.buildingId = id;
-    },
+    }
   }
 };
 </script>
