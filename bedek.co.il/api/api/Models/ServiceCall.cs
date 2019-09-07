@@ -1,5 +1,6 @@
 ﻿using api.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,9 @@ namespace api.Models
         [Required]
         public ServiceCallStatus Status { get; set; }
 
+        public string Description { get; set; }
+
+        public virtual ICollection<ServiceInHandymanInBuildingInServiceCall> ServiceInHandymanInBuildingInServiceCall { get; set; }
+        public virtual ICollection<ServiceCallDoc> ServiceCallDoc { get; set; }
     }
 }

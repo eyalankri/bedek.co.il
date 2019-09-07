@@ -42,7 +42,7 @@ namespace api.Controllers
             var connStr = _configuration.GetConnectionString("DefaultConnection");
 
             var list = new List<ServiceInHandymanInBuildingInServiceCallDto>();
-
+            DateTime today = DateTime.Today;
             try
             {
                 using (var conn = new SqlConnection(connStr))
@@ -52,7 +52,7 @@ namespace api.Controllers
                         conn.Open();
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@ApartmentId", apartmentId);
-                        cmd.Parameters.AddWithValue("@ServiceCallId",serviceCallId);
+                        cmd.Parameters.AddWithValue("@ServiceCallId", serviceCallId);
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -60,7 +60,7 @@ namespace api.Controllers
 
                                 list.Add(new ServiceInHandymanInBuildingInServiceCallDto()
                                 {
-                                    ServiceInHandymanInBuildingId = (int)reader["ServiceInHandymanInBuildingId"] ,
+                                    ServiceInHandymanInBuildingId = (int)reader["ServiceInHandymanInBuildingId"],
                                     UserId = (Guid)reader["UserId"],
                                     FirstName = (string)reader["FirstName"],
                                     LastName = (string)reader["LastName"],
@@ -68,9 +68,12 @@ namespace api.Controllers
                                     ServiceName = (string)reader["ServiceName"],
                                     ServiceId = (int)reader["ServiceId"],
                                     BuildingId = (int)reader["BuildingId"],
-                                    ApartmentId =  reader["ApartmentId"] == DBNull.Value ? null : (int?)reader["ApartmentId"],
+                                    ApartmentId = reader["ApartmentId"] == DBNull.Value ? null : (int?)reader["ApartmentId"],
                                     IsAssociated = reader["ApartmentId"] == DBNull.Value ? false : true,
-
+                                    WarrantyPeriodInYears = (int)reader["WarrantyPeriodInMonths"] / 12,
+                                    DateOfEntrance = (DateTime)reader["DateOfEntrance"],
+                                    IsWarrantyExpired = (today - (DateTime)reader["DateOfEntrance"]).TotalDays / 365 > ((int)reader["WarrantyPeriodInMonths"] / 12) ? true : false,
+                                    WarrantyDaysElpased = today.Subtract((DateTime)reader["DateOfEntrance"]).TotalDays - (((int)reader["WarrantyPeriodInMonths"] / 12 * 365))
                                     //WarrantyPeriodInMonths = (int)reader["WarrantyPeriodInMonths"],
                                     //UserId = reader["UserId"].ToString() == "" ? null : (Guid?)reader["UserId"]
                                 }); ;
@@ -94,7 +97,7 @@ namespace api.Controllers
         [HttpPost]
         [Route("Add")]
         [EnableCors("MyPolicy")]
-        public IActionResult Add([FromBody] ServiceCall serviceCallDto, [FromBody] ServiceInHandymanInBuildingInServiceCallDto[] listDto,)
+        public IActionResult Add([FromBody] ServiceCallDto serviceCallDto)
         {
             serviceCallDto.Status = ServiceCallStatus.New;
 
@@ -111,22 +114,22 @@ namespace api.Controllers
                 return Ok(entity);
 
 
-                if (!ModelState.IsValid) return BadRequest();
+                //if (!ModelState.IsValid) return BadRequest();
 
-                _db.ServiceInUser.RemoveRange(_db.ServiceInUser.Where(x => x.UserId == listDto.FirstOrDefault().UserId));
-                _db.SaveChanges();
+                //_db.ServiceInUser.RemoveRange(_db.ServiceInUser.Where(x => x.UserId == listDto.FirstOrDefault().UserId));
+                //_db.SaveChanges();
 
-                if (!listDto.FirstOrDefault().RemoveAll) // all the services removed from user. don't insert
-                {
-                    foreach (var dto in listDto)
-                    {
-                        var entity = _mapper.Map<ServiceInHandyman>(dto);
-                        _db.Add(entity);
-                        _db.SaveChanges();
+                //if (!listDto.FirstOrDefault().RemoveAll) // all the services removed from user. don't insert
+                //{
+                //    foreach (var dto in listDto)
+                //    {
+                //        var entity = _mapper.Map<ServiceInHandyman>(dto);
+                //        _db.Add(entity);
+                //        _db.SaveChanges();
 
 
-                    }
-                }
+                //    }
+                //}
 
 
             }
@@ -137,10 +140,6 @@ namespace api.Controllers
                 throw;
             }
 
-
-
-            return Ok();
         }
     }
-}
 }

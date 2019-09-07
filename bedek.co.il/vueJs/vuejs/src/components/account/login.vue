@@ -60,6 +60,8 @@ export default {
         Email: this.email,
         Password: this.password
       };
+
+      console.log(process.env.ROOT_API + "Account/CreateToken")
       axios
         .post(process.env.ROOT_API + "Account/CreateToken", userDetails)
         .then(response => {

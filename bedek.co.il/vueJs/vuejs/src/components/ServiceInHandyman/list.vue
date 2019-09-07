@@ -28,6 +28,7 @@
               <input :checked="props.row.isChecked" type="checkbox" />
               <span></span>
             </span>
+             <!-- show all other fields -->
             <span v-else>{{props.formattedRow[props.column.field]}}</span>
           </template>
         </vue-good-table>
@@ -113,11 +114,10 @@ export default {
     },
     updateServiceInHandyMan(params) {
       
-     console.clear();
 
       var listDto = [];
       var userId = this.handymanId;
-      console.log(params.selectedRows.length)
+     
       if (params.selectedRows.length == 0) { // for remove all checkboxex
        let obj = {
           UserId: userId,

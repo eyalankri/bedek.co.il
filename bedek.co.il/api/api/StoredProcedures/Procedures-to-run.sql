@@ -180,14 +180,20 @@ GO
  * Last changed by Eyal
  * Time: 30/08/2019 15:16:25
  ************************************************************/
-ALTER PROCEDURE [dbo].[ServiceInHandymanInBuildingInServiceCall_Select_BuildingId-ServiceCallId]
-	@BuildingId INT,
-	@ServiceCallId UNIQUEIDENTIFIER
+ -- [ServiceInHandymanInBuildingInServiceCall_Select_ApartmentId-ServiceCallId] 1, null
+alter PROCEDURE [dbo].[ServiceInHandymanInBuildingInServiceCall_Select_ApartmentId-ServiceCallId]
+	@ApartmentId INT,
+	@ServiceCallId UNIQUEIDENTIFIER  = null
 AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	
+	DECLARE	@BuildingId int 
+	DECLARE @DateOfEntrance DATETIME
+	Select 
+		@BuildingId = BuildingId, 
+		@DateOfEntrance = DateOfEntrance
+	From  Apartments where ApartmentId  = @ApartmentId
 	
 	SELECT s.ServiceId,
 	       s.ServiceName,
@@ -205,7 +211,9 @@ BEGIN
 	       u.DateRegistered,
 	       u.Company,
 	       uib.BuildingId,
-	       sc.ApartmentId
+	       sc.ApartmentId,
+		   uib.ServiceInHandymanInBuildingId,
+		   @DateOfEntrance as 'DateOfEntrance'
 	FROM   [Service]                 AS s
 	       INNER JOIN ServiceInUser  AS siu
 	            ON  s.ServiceId = siu.ServiceId
@@ -216,7 +224,7 @@ BEGIN
 	            AND uib.ServiceId = s.ServiceId
 	            AND uib.BuildingId = @BuildingId
 	       LEFT JOIN ServiceInHandymanInBuildingInServiceCall AS sihibisc
-				ON sihibisc.ServiceInHandymanInBuildingId = uib.ServiceId
+				ON sihibisc.ServiceInHandymanInBuildingId = uib.ServiceInHandymanInBuildingId
 		   LEFT	JOIN ServiceCall AS sc
 				ON SC.ServiceCallId = sihibisc.ServiceCallId
 	ORDER BY

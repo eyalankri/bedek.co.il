@@ -30,16 +30,12 @@
       </div>
     </div>
     <div class="row">
-      <div class="input-field col s12 m12">
-        <tiptap
-          id="tiptap"
-          style="padding:5px 0"
-          ref="tiptap"
-          :editorContent="this.serviceCallDescription"
-        ></tiptap>
-        <label for="tiptap-container">מהות הפנייה</label>
+      <div class="input-field col s12">
+        <input id="serviceCallDescription" type="text" v-model="serviceCallDescription" />
+        <label for="serviceCallDescription">מהות הפנייה</label>
       </div>
     </div>
+
     <div class="row" v-if="this.serviceCallId">
       <div class="col s12 m6">
         <div class="file-field input-field">
@@ -77,10 +73,17 @@
           <template slot="table-row" slot-scope="props">
             <!--  if col name is 'isChecked' -->
             <span v-if="props.column.field == 'isChecked'">
-              <input :checked="props.row.isChecked" type="checkbox" />
+              <input
+                :checked="props.row.isChecked"
+                type="checkbox"
+                class="isChecked"
+                :id="props.row.serviceInHandymanInBuildingId"
+              />
               <span></span>
             </span>
-            <span v-else>{{props.formattedRow[props.column.field]}}</span>
+
+            <span v-else v-html="props.formattedRow[props.column.field]"></span>
+            <!-- show all other fields -->
           </template>
         </vue-good-table>
       </div>
@@ -102,7 +105,6 @@ export default {
   data() {
     return {
       progressBar: null,
-      allowUpdate: false,
       feedback: null,
       apartmentId: this.$route.params.apartmentId,
       serviceCallDescription: null,
@@ -119,21 +121,37 @@ export default {
       lastName: null,
       phone1: null,
       phone2: null,
-      identityCardId: null,
       email: null,
+      warrantyPeriodInYears: null,
+      selectedLoopCounter: 1,
       arrServiceInHandymanInBuildingId: [],
       rows: [],
       columns: [
         {
-          label: "serviceInHandymanInBuildingId",  
           field: "serviceInHandymanInBuildingId",
           type: "number",
-          
+          hidden: true
         },
         {
           label: "חוק המכר",
           field: "serviceName"
         },
+        {
+          label: "ש.אחריות",
+          field: "warrantyPeriodInYears",
+          type: "number"
+        },
+        {        
+          field: "isWarrantyExpired",
+          type: "boolean",
+          hidden: true
+        },
+        {
+          label: "ימים מסוף אחריות",
+          field: "warantyIcon",
+          html: true
+        },
+
         {
           label: "חברה",
           field: "company"
@@ -166,8 +184,6 @@ export default {
         )
         .then(res => {
           this.progressBar = false;
-          console.log(res.data.projectName);
-          // set the building info
           this.buildingId = res.data.buildingId;
           this.projectName = res.data.projectName;
           this.city = res.data.city;
@@ -184,47 +200,74 @@ export default {
           this.dateOfEntrance = moment(res.data.dateOfEntrance).format(
             "DD/MM/YYYY"
           );
-
-          this.$store.commit(
-            "setInfoBarText",
-            `${this.projectName}: ${this.street} ${this.buildingNumber} ${this.city}. דירה : ${res.data.apartmentNumber}`
-          );
         })
         .catch(error => {
           console.log("loadApartmentInfo() :" + error);
         });
     },
     selectionChanged(params) {
-        
-    var arr = [];
-      params.selectedRows.forEach(function(el) {  
-        arr.push(
-          el.serviceInHandymanInBuildingId
-        );        
-      });
+      
+      
      
-        this.arrServiceInHandymanInBuildingId = arr;
-        console.log(this.arrServiceInHandymanInBuildingId)
+
+      // for some reason it runs twice - block the second one.
+      if (this.selectedLoopCounter > 1) {
+        this.selectedLoopCounter = 1;
+        return false;
+      }
+
+      var isConfirmed = true;
+      this.arrServiceInHandymanInBuildingId = [];
+
+      var arrSelected = [];
+      
+      params.selectedRows.forEach(el => {
+
+        if (el.isWarrantyExpired) {
+          isConfirmed = confirm("תוקף תקופת האחריות של חוק מכר זה הסתיימה. האם להמשיך?")
+        }
+        arrSelected.push(el.serviceInHandymanInBuildingId);
+        this.arrServiceInHandymanInBuildingId.push(
+          el.serviceInHandymanInBuildingId
+        );
+      });
+
+       if (isConfirmed) {
+      this.rows.forEach(el => {
+        el.isChecked = false;
+        if (arrSelected.includes(el.serviceInHandymanInBuildingId)) {
+          el.isChecked = true;
+        }
+      });
+
+      }
+
+      
+      this.selectedLoopCounter++;
     },
+
     insertServiceCall(params) {
-        if (this.arrServiceInHandymanInBuildingId.length == 0) {
-            alert("יש לשייך חוק מכר");
-            return false;
-        }    
+      console.clear();
+      console.log(this.arrServiceInHandymanInBuildingId);
+      console.log(1, this.serviceCallDescription);
+
+      if (this.arrServiceInHandymanInBuildingId.length == 0) {
+        alert("יש לשייך חוק מכר");
+        return false;
+      }
 
       let serviceCall = {
-          ApartmentId : this.apartmentId,
-          //more prop in backend.
-      }
-      let apartmentId = this.apartmentId;
-      console.log(params.selectedRows.length);
-    
-    
+        ApartmentId: this.apartmentId,
+        Description: this.serviceCallDescription,
+        ArrServiceInHandymanInBuildingId: this.arrServiceInHandymanInBuildingId
+      };
 
+      console.log(serviceCall);
+    
       axios
         .post(
-          process.env.ROOT_API + "ServiceInHandymanInBuilding/Update",
-          listDto,
+          process.env.ROOT_API + "ServiceInHandymanInBuildingInServiceCall/Add",
+          serviceCall,
           this.$store.getters.getTokenHeader
         )
         .then(res => {
@@ -243,6 +286,7 @@ export default {
         url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}&serviceCallId=${this.serviceCallId}`;
       }
 
+      console.clear();
       axios
         .get(
           process.env.ROOT_API + url,
@@ -259,11 +303,12 @@ export default {
 
           this.rows = response.data;
 
-          this.allowUpdate = true;
           this.rows.forEach(el => {
             if (el.isChecked) {
-              this.$set(this.rows[el.rowId], "vgtSelected", true); 
-              this.allowUpdate = false; // if there are selected rows set allowUpdate=false // because in it will post to the server before any manulally selection
+              this.$set(this.rows[el.rowId], "vgtSelected", true);
+            }
+            if (el.isWarrantyExpired) {
+              el.warantyIcon = `<i style='color:orange' class='material-icons'>warning</i> (${el.warrantyDaysElpased})`;
             }
           });
         })
@@ -278,6 +323,8 @@ export default {
     this.loadApartmentInfo();
     this.loadServiceInHandymanInBuildingInServiceCall();
     this.$store.commit("setInfoBarText", "קריאת שירות");
+
+    $(".ProseMirror").text("");
   }
 };
 </script>
