@@ -33,6 +33,15 @@ namespace api.Controllers
             _configuration = configuration;
         }
 
+
+
+
+        
+
+        /// <summary>
+        /// The list of Handymans in the service call page, where you can select to which handyman to attach this call
+        /// </summary>
+
         [HttpGet]
         [Route("List")]
         [EnableCors("MyPolicy")]
@@ -99,7 +108,7 @@ namespace api.Controllers
         [EnableCors("MyPolicy")]
         public IActionResult Add([FromBody] ServiceCallDto serviceCallDto)
         {
-            serviceCallDto.Status = ServiceCallStatus.New;
+            serviceCallDto.Status = ServiceCallStatus.New.ToString();
 
             try
             {

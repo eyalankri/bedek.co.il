@@ -1,14 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models
 {
     public class ServiceInHandymanInBuildingInServiceCall
     {
-        [Required]
+        [Required]        
         public int ServiceInHandymanInBuildingId { get; set; }
 
-        [Required]
+        [Required]       
         public Guid ServiceCallId { get; set; }
     }
 }

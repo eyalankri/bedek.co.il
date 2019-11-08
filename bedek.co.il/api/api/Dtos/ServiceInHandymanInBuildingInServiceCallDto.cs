@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace api.Dtos
 {
 
-    public class ServiceCallDto
+    public class ServiceCallDto1
     {
 
         [Required]

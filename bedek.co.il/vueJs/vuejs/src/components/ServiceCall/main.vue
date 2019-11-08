@@ -88,7 +88,10 @@
         </vue-good-table>
       </div>
     </div>
-    <a @click="insertServiceCall" class="waves-effect waves-light btn right">שמור קריאת שירות</a>
+    <a v-if="isInsertButtonVisible" @click="insertServiceCall" class="waves-effect waves-light btn right">שמור קריאת שירות</a>
+    <div v-if="successfulySavedArea">
+      <a class="waves-effect waves-light btn right">שלח פנייה</a>
+    </div>
   </div>
 </template>
 
@@ -123,6 +126,8 @@ export default {
       phone2: null,
       email: null,
       warrantyPeriodInYears: null,
+      insertButtonVisible: true,
+      afterInsertAreaVisible: false,
       selectedLoopCounter: 1,
       arrServiceInHandymanInBuildingId: [],
       rows: [],
@@ -272,6 +277,8 @@ export default {
         )
         .then(res => {
           console.log(res);
+          this.insertButtonVisible = false;
+          this.afterInsertAreaVisible
         })
         .catch(error => {
           console.log(error);

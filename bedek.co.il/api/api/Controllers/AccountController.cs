@@ -31,7 +31,8 @@ namespace api.Controllers
         [Route("IsTokenValid")]
         public IActionResult IsTokenValid()
         {
-
+            // just return ok.
+            // if user can access this he is autorhized.
             return Ok();
         }
 

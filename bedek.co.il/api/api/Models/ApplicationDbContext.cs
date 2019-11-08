@@ -64,6 +64,12 @@ namespace api.Models
                 table.ServiceId
             });
 
+            modelBuilder.Entity<ServiceInHandymanInBuildingInServiceCall> ().HasKey(table => new
+            {
+                table.ServiceCallId,
+                table.ServiceInHandymanInBuildingId              
+            });
+
 
             // ----------- Isert default data:
             // Insert Administrator & Lead Role to Role table

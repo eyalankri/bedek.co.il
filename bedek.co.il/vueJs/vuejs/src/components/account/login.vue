@@ -73,6 +73,7 @@ export default {
           this.$store.commit('setLoggedInUser', this.email)    
 
             console.clear()
+            console.log(response.data.token);
            $('.navbar').show();
 
            

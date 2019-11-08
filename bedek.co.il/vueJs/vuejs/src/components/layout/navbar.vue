@@ -23,6 +23,9 @@
               </li>
                <li>
                  <router-link :to="{name: 'serviceList'}">חוקי מכר </router-link>
+              </li>      
+               <li>
+                 <router-link :to="{name: 'serviceCallList'}">קריאות שירות </router-link>
               </li>               
             </ul>
           </div>

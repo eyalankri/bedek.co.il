@@ -6,14 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models
 {
-    public class ServiceCall
+    public class ServiceCallDto
     {
-        public ServiceCall()
-        {                         
-            DateUpdated = DateCreated = DateTime.Today;            
+        public ServiceCallDto()
+        {
+            DateUpdated = DateCreated = DateTime.Today;
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]        
+
         public Guid ServiceCallId { get; set; }
 
         [Required]
@@ -24,6 +24,15 @@ namespace api.Models
         public DateTime DateUpdated { get; set; }
         [Required]
         public string Status { get; set; }
+        
+
+
+        public int ApartmentNumber { get; set; }
+        public string BuildingNumber { get; set; }
+        public string ProjectName { get; set; }
+        public string City { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         public string Description { get; set; }
 

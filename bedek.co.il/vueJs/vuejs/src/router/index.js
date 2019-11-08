@@ -18,10 +18,11 @@ import addUpdateHandyman from '@/components/handyman/add-update';
 import serviceInHandyman from '@/components/ServiceInHandyman/list';
 import handymanInBuilding from '@/components/HandymanInBuilding/list';
 
-import serviceList      from '@/components/service/list';
+import serviceList from '@/components/service/list';
 import addUpdateService from '@/components/service/add-update';
 
-import serviceCall      from '@/components/serviceCall/main';
+import serviceCall from '@/components/serviceCall/main';
+import serviceCallList from '@/components/serviceCall/list';
 
 
 
@@ -45,12 +46,20 @@ const router = new Router({
       component: Login
     },
     {
+      path: '/service-call-list/',
+      name: 'serviceCallList',
+      component: serviceCallList,
+      props: true,
+      params: null,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/service-call/:apartmentId?',
       name: 'serviceCall',
       component: serviceCall,
       props: true,
       params: null,
-      meta: { requiresAuth: true}
+      meta: { requiresAuth: true }
     },
     {
       path: '/service/list',
@@ -58,7 +67,7 @@ const router = new Router({
       component: serviceList,
       props: true,
       params: null,
-      meta: { requiresAuth: true}
+      meta: { requiresAuth: true }
     },
     {
       //http://localhost:8080/#/add-update/1
@@ -82,7 +91,7 @@ const router = new Router({
     {
       path: '/handyman/add-update/:handymanId?',
       name: 'addUpdateHandyman',
-      component: addUpdateHandyman ,
+      component: addUpdateHandyman,
       props: true,
       params: null,
       meta: {
@@ -93,7 +102,7 @@ const router = new Router({
       //http://localhost:8080/#/service-in-handyman/list/d2ea01e8-0f9f-4bc2-a3a8-9e2e5ce0071e
       path: '/service-in-handyman/list/:handymanId?',
       name: 'serviceInHandyman',
-      component: serviceInHandyman ,
+      component: serviceInHandyman,
       props: true,
       params: null,
       meta: {
@@ -104,7 +113,7 @@ const router = new Router({
       //http://localhost:8080/#/handyman-in-building/list/2/d2ea01e8-0f9f-4bc2-a3a8-9e2e5ce0071e
       path: '/handyman-in-building/list/:buildingId',
       name: 'handymanInBuilding',
-      component: handymanInBuilding ,
+      component: handymanInBuilding,
       props: true,
       params: null,
       meta: {
@@ -113,7 +122,7 @@ const router = new Router({
     },
     {
       path: '/buildings',
-      name: 'buildings',      
+      name: 'buildings',
       component: Buildings,
       props: true,
       params: null,
@@ -174,43 +183,43 @@ const router = new Router({
 
     {
       path: '*',
-      name:'Error404', 
+      name: 'Error404',
       component: Error404
     }
-    
+
   ]
 });
 
 
 router.beforeEach((to, form, next) => {
-  
-   
+
+
   // check to see if route requires auth
   if (to.matched.some(rec => rec.meta.requiresAuth)) {
-    
+
     let isTokenValid = false;
     let token = localStorage.getItem("user-token");
-     
+
     var headers = {
       headers: {
         'Authorization': "Bearer " + token
       }
-    };    
+    };
     axios
       .get(process.env.ROOT_API + "/Account/IsTokenValid", headers)
       .then(response => {
-        
-          next(); // token will be valid
-              
+
+        next(); // token will be valid
+
       })
       .catch(error => {
         localStorage.removeItem('user-token');
-        next({ name: 'Login' });        
+        next({ name: 'Login' });
       });;
-    
 
 
-  } 
+
+  }
   else { // does not need auth
     next()
   }
