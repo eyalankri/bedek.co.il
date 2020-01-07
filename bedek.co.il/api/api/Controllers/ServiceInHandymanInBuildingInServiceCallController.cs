@@ -114,11 +114,41 @@ namespace api.Controllers
             {
 
                 var entity = _mapper.Map<ServiceCall>(serviceCallDto);
+
+                
+
                 //password using constructor
 
                 if (!ModelState.IsValid) return BadRequest();
 
                 _db.Add(entity);
+                _db.SaveChanges();
+
+               
+                var serviceCallId = entity.ServiceCallId;
+
+
+                entity = _db.ServiceCall.Find(serviceCallId);
+
+                //var listServiceInHandymanInBuildingInServiceCall = new List<ServiceInHandymanInBuildingInServiceCall>();
+                foreach (var serviceInHandymanInBuildingId in serviceCallDto.ArrServiceInHandymanInBuildingId)
+                {
+                    var s = new ServiceInHandymanInBuildingInServiceCall
+                    {
+                        ServiceCallId = serviceCallId,
+                        ServiceInHandymanInBuildingId = serviceInHandymanInBuildingId,
+                    };
+
+                    //listServiceInHandymanInBuildingInServiceCall.Add(s);
+                    entity.ServiceInHandymanInBuildingInServiceCall.Add(s);
+
+
+                }
+                //entity.ServiceInHandymanInBuildingInServiceCall.Add(listServiceInHandymanInBuildingInServiceCall);
+
+                //   _db.Entry(entity).CurrentValues.SetValues(service);
+
+
                 _db.SaveChanges();
                 return Ok(entity);
 

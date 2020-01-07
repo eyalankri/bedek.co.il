@@ -18,11 +18,11 @@ namespace api.Models
 
         [Required]
         public int ApartmentId { get; set; }
-        [Required]
+        
         public DateTime DateCreated { get; set; }
-        [Required]
+        
         public DateTime DateUpdated { get; set; }
-        [Required]
+        
         public string Status { get; set; }
         
 
@@ -35,6 +35,8 @@ namespace api.Models
         public string LastName { get; set; }
 
         public string Description { get; set; }
+
+        public int[] ArrServiceInHandymanInBuildingId { get; set; }
 
         public virtual ICollection<ServiceInHandymanInBuildingInServiceCall> ServiceInHandymanInBuildingInServiceCall { get; set; }
         public virtual ICollection<ServiceCallDoc> ServiceCallDoc { get; set; }

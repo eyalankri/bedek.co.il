@@ -43,33 +43,49 @@ export default {
                            Description = sc.Description,
                            FirstName = u.FirstName,
                            LastName = u.LastName    */
+     rows: [],
       columns: [
         {
           label: "Id",
-          field: "ServiceCallId",
-          type: "number"
+          field: "serviceCallId",
+         hidden:true          
         },
-        {
-          label: "ת.פתיחה",
-          field: "DateCreated"
+         {
+          label: "סטטוס",
+          field: "status"
         },
-        {
-          label: "ת.עדכון",
-          field: "DateUpdated"
+          {
+          label: "עיר",
+          field: "city"
+        },
+         {
+          label: "פרוייקט",
+          field: "projectName"
+        },
+         {
+          label: "דירה",
+          field: "apartmentNumber"
         },
         {
           label: "משפחה",
-          field: "user.lastName"
+          field: "lastName"
         },
         {
-          label: "טלפון",
-          field: "user.phone1"
+          label: "שם",
+          field: "firstName"
+        },
+       
+        {
+          label: "ת.פתיחה",
+          field: "dateCreated"
         },
         {
-          label: "הצג",
-          field: "show",
-          html: true
-        }
+          label: "ת.עדכון",
+          field: "dateUpdated"
+        },
+        
+      
+
       ]
     };
   },
@@ -92,9 +108,8 @@ export default {
         .then(res => {
           console.log(res.data);
           res.data.forEach(res => {
-            res.dateOfEntrance = moment(res.dateOfEntrance).format(
-              "DD/MM/YYYY"
-            );
+            res.dateUpdated = moment(res.dateUpdated).format("DD/MM/YYYY");
+            res.dateCreated = moment(res.dateCreated).format("DD/MM/YYYY");
           });
 
           this.rows = res.data;

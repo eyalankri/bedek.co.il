@@ -129,7 +129,9 @@ export default {
       insertButtonVisible: true,
       afterInsertAreaVisible: false,
       selectedLoopCounter: 1,
+      isInsertButtonVisible:true,
       arrServiceInHandymanInBuildingId: [],
+      successfulySavedArea: true,
       rows: [],
       columns: [
         {
@@ -231,6 +233,9 @@ export default {
         if (el.isWarrantyExpired) {
           isConfirmed = confirm("תוקף תקופת האחריות של חוק מכר זה הסתיימה. האם להמשיך?")
         }
+        if (!isConfirmed) {
+          return false;
+        }
         arrSelected.push(el.serviceInHandymanInBuildingId);
         this.arrServiceInHandymanInBuildingId.push(
           el.serviceInHandymanInBuildingId
@@ -253,26 +258,23 @@ export default {
 
     insertServiceCall(params) {
       console.clear();
-      console.log(this.arrServiceInHandymanInBuildingId);
-      console.log(1, this.serviceCallDescription);
-
+     
       if (this.arrServiceInHandymanInBuildingId.length == 0) {
         alert("יש לשייך חוק מכר");
         return false;
       }
 
-      let serviceCall = {
-        ApartmentId: this.apartmentId,
-        Description: this.serviceCallDescription,
-        ArrServiceInHandymanInBuildingId: this.arrServiceInHandymanInBuildingId
+      var data = {
+        apartmentId: this.apartmentId,
+        description: this.serviceCallDescription,
+        arrServiceInHandymanInBuildingId: this.arrServiceInHandymanInBuildingId,
       };
-
-      console.log(serviceCall);
-    
+      debugger;
+    console.log(data)
       axios
         .post(
           process.env.ROOT_API + "ServiceInHandymanInBuildingInServiceCall/Add",
-          serviceCall,
+          data,
           this.$store.getters.getTokenHeader
         )
         .then(res => {
@@ -293,7 +295,7 @@ export default {
         url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}&serviceCallId=${this.serviceCallId}`;
       }
 
-      console.clear();
+      
       axios
         .get(
           process.env.ROOT_API + url,

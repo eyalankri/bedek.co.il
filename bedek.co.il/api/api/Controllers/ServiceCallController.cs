@@ -47,7 +47,7 @@ namespace api.Controllers
                        {
                            ServiceCallId = sc.ServiceCallId,
                            DateCreated = sc.DateCreated,
-                           DateUpdated = sc.DateUpdated,
+                           DateUpdated = sc.DateUpdated,                           
                            Status = sc.Status,//sc.Status,
                            ApartmentNumber = a.ApartmentNumber,
                            BuildingNumber = b.BuildingNumber,
@@ -55,7 +55,8 @@ namespace api.Controllers
                            City = b.City,
                            Description = sc.Description,
                            FirstName = u.FirstName,
-                           LastName = u.LastName
+                           LastName = u.LastName,
+                           ProjectName = b.ProjectName
                        };
 
             return list;

@@ -2,6 +2,14 @@
   <div class="showApartment">
     <div>
       <div class="container">
+        <div class="left">
+        <button type="button" class="btn btn-danger btn-circle btn-xl" @click="createCallService">
+          <i class="material-icons" style="color: white; font-size: 1.5em; font-weight: bold;">add</i>
+        </button>
+        <span style="font-size:1.5em">קריאת שירות</span>
+      </div>
+      </div>
+      <div class="container">
         <div class="title-container hand" @click="toggleExpande('details')">
           <span class="title">פרטי הדירה והדייר</span>
           <i class="material-icons" v-if="expandMoreDetails">expand_more</i>
@@ -27,13 +35,7 @@
         <docs :propApartmentId="this.apartmentId" />
       </div>
     </div>
-    <div class="container">
-      <div class="row">
-        <button type="button" class="btn btn-danger btn-circle btn-xl" @click="createCallService">
-          <i class="material-icons" style="color: white; font-size: 1.5em; font-weight: bold;">add</i>
-        </button>
-      </div>
-    </div>
+
     <div class="container">
       <a @click="backToApartmentList" class="waves-effect waves-light btn right">חזרה לרשימת הדירות</a>
     </div>
@@ -60,10 +62,10 @@ export default {
   },
   methods: {
     createCallService() {
-       this.$router.push({
-            name: "serviceCall",
-            params: {apartmentId: this.apartmentId}
-          });
+      this.$router.push({
+        name: "serviceCall",
+        params: { apartmentId: this.apartmentId }
+      });
     },
     toggleExpande(area) {
       if (area == "details") {

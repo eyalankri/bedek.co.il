@@ -54,7 +54,7 @@ const router = new Router({
       meta: { requiresAuth: true }
     },
     {
-      path: '/service-call/:apartmentId?',
+      path: '/service-call/:apartmentId',
       name: 'serviceCall',
       component: serviceCall,
       props: true,
