@@ -131,7 +131,7 @@ export default {
       selectedLoopCounter: 1,
       isInsertButtonVisible:true,
       arrServiceInHandymanInBuildingId: [],
-      successfulySavedArea: true,
+      successfulySavedArea: false,
       rows: [],
       columns: [
         {
@@ -279,8 +279,8 @@ export default {
         )
         .then(res => {
           console.log(res);
-          this.insertButtonVisible = false;
-          this.afterInsertAreaVisible
+          this.isInsertButtonVisible = false;
+          this.successfulySavedArea = true;
         })
         .catch(error => {
           console.log(error);
