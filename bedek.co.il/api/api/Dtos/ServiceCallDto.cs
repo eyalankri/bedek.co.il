@@ -42,11 +42,21 @@ namespace api.Models
         public virtual ICollection<ServiceInHandymanInBuildingInServiceCall> ServiceInHandymanInBuildingInServiceCall { get; set; }
         public virtual ICollection<ServiceCallDoc> ServiceCallDoc { get; set; }
 
+        public string FileName { get; set; }
+   
+
+        public string FileContentType { get; set; }
+
 
         // [Required]
         public string DocDescription { get; set; }         
 
         //[Required]
+        public IFormFile PostedFile { get; set; }
+    }
+
+    public class Test
+    {
         public IFormFile PostedFile { get; set; }
     }
 }
