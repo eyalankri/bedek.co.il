@@ -17,7 +17,7 @@ namespace api.Models
 
         public Guid ServiceCallId { get; set; }
 
-        [Required]
+        //[Required]
         public int ApartmentId { get; set; }
         
         public DateTime DateCreated { get; set; }
@@ -43,10 +43,10 @@ namespace api.Models
         public virtual ICollection<ServiceCallDoc> ServiceCallDoc { get; set; }
 
 
-        [Required]
+        // [Required]
         public string DocDescription { get; set; }         
 
-        [Required]
+        //[Required]
         public IFormFile PostedFile { get; set; }
     }
 }

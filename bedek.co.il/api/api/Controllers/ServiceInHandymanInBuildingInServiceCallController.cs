@@ -17,8 +17,8 @@ using Microsoft.Extensions.Configuration;
 namespace api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
+    //[ApiController]
+    //[Authorize]
 
     public class ServiceInHandymanInBuildingInServiceCallController : ControllerBase
     {

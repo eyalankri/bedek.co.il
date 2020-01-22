@@ -294,18 +294,18 @@ export default {
       if (!this.isFileValid) return false;
 
       var formData = new FormData();
-      formData.append("Description", this.serviceCallDescription);
-      formData.append("ArrServiceInHandymanInBuildingId",this.arrServiceInHandymanInBuildingId);
-      formData.append("ApartmentId", this.apartmentId);
-      formData.append("DocDescription", this.docDescription);
-      formData.append("PostedFile", this.postedFile);
-
+      //formData.append("Description", this.serviceCallDescription);
+      //formData.append("ArrServiceInHandymanInBuildingId",this.arrServiceInHandymanInBuildingId);
+      //formData.append("ApartmentId", this.apartmentId);
+      formData.append("docDescription", this.docDescription);
+      formData.append("postedFile", this.postedFile);
+      console.log(formData)
 debugger
       axios
         .post(
           process.env.ROOT_API + "ServiceInHandymanInBuildingInServiceCall/Add",
           formData,
-          this.$store.getters.getTokenHeader
+          this.$store.getters.getTokenHeaderFormData
         )
         .then(res => {
           console.log(res);
