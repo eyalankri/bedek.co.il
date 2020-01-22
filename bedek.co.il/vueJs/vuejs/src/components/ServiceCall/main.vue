@@ -49,6 +49,27 @@
         </div>
       </div>
     </div>
+
+    <div>
+      <div class="row">
+        <div class="input-field col s12 m6 l8">
+          <input id="docDescription" type="text" v-model="docDescription" />
+          <label for="docDescription">תיאור המסמך</label>
+        </div>
+        <div class="col s12 m6 l4">
+          <div class="file-field input-field">
+            <div class="btn">
+              <span>בחר קובץ</span>
+              <input type="file" id="apDoc" @change="onFileSelected" />
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text" placeholder="בחר מסמך" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div id="vgt">
         <vue-good-table
@@ -88,9 +109,14 @@
         </vue-good-table>
       </div>
     </div>
-    <a v-if="isInsertButtonVisible" @click="insertServiceCall" class="waves-effect waves-light btn right">שמור קריאת שירות</a>
+    <a
+      v-if="isInsertButtonVisible"
+      @click="insertServiceCall"
+      class="waves-effect waves-light btn right"
+    >שמור קריאת שירות</a>
+    <p class="red-text right" v-if="feedback">{{ feedback }}</p>
     <div v-if="successfulySavedArea">
-      <a class="waves-effect waves-light btn right">שלח פנייה</a>
+      <a class="waves-effect waves-light btn right">שלח לוואטסאפ</a>
     </div>
   </div>
 </template>
@@ -101,10 +127,11 @@ import "vue-good-table/dist/vue-good-table.css";
 import { VueGoodTable } from "vue-good-table";
 import tiptap from "@/components/utilities/tiptap";
 import moment from "moment";
+import docs from "@/components/ServiceCall/docs";
 
 export default {
   name: "serviceCall",
-  components: { VueGoodTable, tiptap },
+  components: { VueGoodTable, tiptap, docs },
   data() {
     return {
       progressBar: null,
@@ -129,9 +156,13 @@ export default {
       insertButtonVisible: true,
       afterInsertAreaVisible: false,
       selectedLoopCounter: 1,
-      isInsertButtonVisible:true,
+      isInsertButtonVisible: true,
       arrServiceInHandymanInBuildingId: [],
       successfulySavedArea: false,
+      expandMoreDocs: true,
+      docDescription: null,
+      postedFile: null,
+      isFileValid: null,
       rows: [],
       columns: [
         {
@@ -148,7 +179,7 @@ export default {
           field: "warrantyPeriodInYears",
           type: "number"
         },
-        {        
+        {
           field: "isWarrantyExpired",
           type: "boolean",
           hidden: true
@@ -213,10 +244,6 @@ export default {
         });
     },
     selectionChanged(params) {
-      
-      
-     
-
       // for some reason it runs twice - block the second one.
       if (this.selectedLoopCounter > 1) {
         this.selectedLoopCounter = 1;
@@ -227,11 +254,12 @@ export default {
       this.arrServiceInHandymanInBuildingId = [];
 
       var arrSelected = [];
-      
-      params.selectedRows.forEach(el => {
 
+      params.selectedRows.forEach(el => {
         if (el.isWarrantyExpired) {
-          isConfirmed = confirm("תוקף תקופת האחריות של חוק מכר זה הסתיימה. האם להמשיך?")
+          isConfirmed = confirm(
+            "תוקף תקופת האחריות של חוק מכר זה הסתיימה. האם להמשיך?"
+          );
         }
         if (!isConfirmed) {
           return false;
@@ -242,40 +270,42 @@ export default {
         );
       });
 
-       if (isConfirmed) {
-      this.rows.forEach(el => {
-        el.isChecked = false;
-        if (arrSelected.includes(el.serviceInHandymanInBuildingId)) {
-          el.isChecked = true;
-        }
-      });
-
+      if (isConfirmed) {
+        this.rows.forEach(el => {
+          el.isChecked = false;
+          if (arrSelected.includes(el.serviceInHandymanInBuildingId)) {
+            el.isChecked = true;
+          }
+        });
       }
 
-      
       this.selectedLoopCounter++;
     },
 
     insertServiceCall(params) {
       console.clear();
-     
+
+      this.feedback = null;
       if (this.arrServiceInHandymanInBuildingId.length == 0) {
         alert("יש לשייך חוק מכר");
         return false;
       }
 
-      var data = {
-        apartmentId: this.apartmentId,
-        description: this.serviceCallDescription,
-        arrServiceInHandymanInBuildingId: this.arrServiceInHandymanInBuildingId,
-      };
-      debugger;
-    console.log(data)
+      if (!this.isFileValid) return false;
+
+      var formData = new FormData();
+      formData.append("Description", this.serviceCallDescription);
+      formData.append("ArrServiceInHandymanInBuildingId",this.arrServiceInHandymanInBuildingId);
+      formData.append("ApartmentId", this.apartmentId);
+      formData.append("DocDescription", this.docDescription);
+      formData.append("PostedFile", this.postedFile);
+      console.log(formData)
+
       axios
         .post(
           process.env.ROOT_API + "ServiceInHandymanInBuildingInServiceCall/Add",
-          data,
-          this.$store.getters.getTokenHeader
+          formData,
+          this.$store.getters.getTokenHeaderFormData
         )
         .then(res => {
           console.log(res);
@@ -295,7 +325,6 @@ export default {
         url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}&serviceCallId=${this.serviceCallId}`;
       }
 
-      
       axios
         .get(
           process.env.ROOT_API + url,
@@ -325,7 +354,41 @@ export default {
           console.log("loadBuildingInfo: " + error);
         });
     },
-    onFileSelected() {}
+    onFileSelected() {
+      this.feedback = null;
+      this.isFileValid = null;
+      this.postedFile = event.target.files[0];
+
+      if (this.postedFile) {
+        this.isFileValid = this.checkFileType(this.postedFile.type);
+      } else {
+        this.feedback = "יש לבחור קובץ";
+        return false;
+      }
+
+      if (!this.isFileValid) {
+        this.feedback = "לא ניתן להעלות קובץ מסוג זה.";
+      }
+    },
+    checkFileType(type) {
+      let isFileValid = false;
+
+      switch (type) {
+        case "image/jpeg":
+        case "image/png":
+        case "text/plain":
+        case "application/pdf":
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": //excel
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": // word
+          isFileValid = true;
+          break;
+
+        default:
+          isFileValid = false;
+      }
+
+      return isFileValid;
+    }
   },
 
   mounted() {
