@@ -1,4 +1,5 @@
 ﻿using api.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -40,5 +41,12 @@ namespace api.Models
 
         public virtual ICollection<ServiceInHandymanInBuildingInServiceCall> ServiceInHandymanInBuildingInServiceCall { get; set; }
         public virtual ICollection<ServiceCallDoc> ServiceCallDoc { get; set; }
+
+
+        [Required]
+        public string DocDescription { get; set; }         
+
+        [Required]
+        public IFormFile PostedFile { get; set; }
     }
 }
