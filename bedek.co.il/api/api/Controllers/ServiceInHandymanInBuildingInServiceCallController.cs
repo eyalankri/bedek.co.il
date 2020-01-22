@@ -149,7 +149,7 @@ namespace api.Controllers
 
             _db.SaveChanges();
 
-
+            // TODO: להשלים את כל החלק של שמירת המסמך בסרביס קול
 
             if (serviceCallDto.PostedFile.Length < 0) return BadRequest("לא נשלח קובץ");
 
