@@ -151,7 +151,7 @@ namespace api.Controllers
 
             // TODO: להשלים את כל החלק של שמירת המסמך בסרביס קול
 
-            if (serviceCallDto.PostedFile.Length < 0) return BadRequest("לא נשלח קובץ");
+            if (serviceCallDto.PostedFile.Length < 0) return Ok(entity);
 
             var appartment = _db.Apartments.Find(serviceCallDto.ApartmentId);
             var buildingId = appartment.BuildingId; // for the right directory
@@ -191,18 +191,33 @@ namespace api.Controllers
                 return BadRequest("הקובץ אינו נשמר!");
             }
 
+            
             serviceCallDto.FileName = fileName;
             serviceCallDto.FileContentType = contentType;
+            serviceCallDto.ServiceCallId = serviceCallId;
+            
+
+            try
+            {
+                var doc = _mapper.Map<ServiceCallDoc>(serviceCallDto);
+                _db.Add(doc);
+              await  _db.SaveChangesAsync();
 
 
-            var doc = _mapper.Map<ServiceCallDoc>(serviceCallDto);
-            if (!ModelState.IsValid) return BadRequest();
+                return Ok(entity);
 
-            _db.Add(doc);
-            _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+         
 
+            
+         
 
-            return Ok(entity);
+            
 
         }
 

@@ -132,11 +132,18 @@ import docs from "@/components/ServiceCall/docs";
 export default {
   name: "serviceCall",
   components: { VueGoodTable, tiptap, docs },
+   watch: {
+    $route(to, from) {
+     window.location.reload();
+    }},
+   
   data() {
     return {
+      isUpdateProcess: false,
       progressBar: null,
       feedback: null,
       apartmentId: this.$route.params.apartmentId,
+      serviceCallId: this.$route.params.serviceCallId,
       serviceCallDescription: null,
       dateOfEntrance: null,
       buildingId: null,
@@ -281,7 +288,7 @@ export default {
 
       this.selectedLoopCounter++;
     },
-
+    
     insertServiceCall(params) {
       console.clear();
 
@@ -309,8 +316,13 @@ export default {
         )
         .then(res => {
           console.log(res);
-          this.isInsertButtonVisible = false;
-          this.successfulySavedArea = true;
+          console.log(res.data.serviceCallId);
+          //this.isInsertButtonVisible = false;
+          //this.successfulySavedArea = true;
+          this.$router.push({
+            name: "serviceCall",
+            params: { apartmentId: this.apartmentId, serviceCallId:res.data.serviceCallId }
+      });
         })
         .catch(error => {
           console.log(error);
@@ -392,11 +404,27 @@ export default {
   },
 
   mounted() {
+    this.serviceCallId = this.$route.params.serviceCallId;
+    
     this.loadApartmentInfo();
-    this.loadServiceInHandymanInBuildingInServiceCall();
-    this.$store.commit("setInfoBarText", "קריאת שירות");
+    
+    
+    if (this.serviceCallId != null) {
+      this.isUpdateProcess = true;
+    }
+    if (! this.isUpdateProcess) {
+      
+        this.loadServiceInHandymanInBuildingInServiceCall();
+        this.$store.commit("setInfoBarText", "פתח קריאת שירות");
+    }
+      else 
+    {
+        this.$store.commit("setInfoBarText", "עדכן קריאת שירות");
+    }
+   
 
     $(".ProseMirror").text("");
-  }
+  },
+  
 };
 </script>

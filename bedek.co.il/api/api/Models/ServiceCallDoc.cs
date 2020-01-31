@@ -6,9 +6,10 @@ namespace api.Models
 {
     public class ServiceCallDoc
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]    
         public Guid ServiceCallDocId { get; set; }
+
+
         [Required]
         public Guid ServiceCallId { get; set; }
 
@@ -18,8 +19,8 @@ namespace api.Models
         public string FileName { get; set; }
         [Required]
         public string FileContentType { get; set; }
-        [Required]
-        public int ServiceInHandymanInBuildingId { get; set; }
+        //[Required]
+        //public int ServiceInHandymanInBuildingId { get; set; }
         [Required]
         public string Status { get; set; }
 

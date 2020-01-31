@@ -162,7 +162,9 @@ namespace api.Models
         public DbSet<ServiceInHandyman> ServiceInUser { get; set; }
         public DbSet<ServiceInHandymanInBuilding> ServiceInHandymanInBuilding { get; set; }
         public DbSet<ServiceCall> ServiceCall { get; set; }
-        
+        public DbSet<ServiceCallDoc> ServiceCallDoc { get; set; }
 
-}
+
+
+    }
 }

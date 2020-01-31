@@ -13,7 +13,7 @@ namespace api.Models
         {
             DateUpdated = DateCreated = DateTime.Today;
         }
-
+        public Guid ServiceCallDocId { get; set; }
 
         public Guid ServiceCallId { get; set; }
 
