@@ -15,6 +15,12 @@
       <br />
       <b>תאריך כניסה לדירה</b>
       {{dateOfEntrance }}
+      <br /><br />
+      <b>תאריך פתיחת פנייה</b>
+      {{dateCreated}}
+      <br />
+      <b>תאריך עדכון אחרון</b>
+      {{dateUpdated}}
     </div>
     <div class="row">
       <div class="col s12 m12">
@@ -159,6 +165,8 @@ export default {
       phone1: null,
       phone2: null,
       email: null,
+      dateCreated: 'לא נפתח',
+      dateUpdated: 'לא עודכן',
       warrantyPeriodInYears: null,
       insertButtonVisible: true,
       afterInsertAreaVisible: false,
@@ -250,6 +258,30 @@ export default {
           console.log("loadApartmentInfo() :" + error);
         });
     },
+
+  loadServiceCallInfo() {
+      // also get the building info
+      axios
+        .get(
+          process.env.ROOT_API +
+            "ServiceInHandymanInBuildingInServiceCall/Get?serviceCallId=" +
+          this.serviceCallId,
+          this.$store.getters.getTokenHeader
+        )
+        .then(res => {
+         debugger;
+         this.serviceCallDescription = res.data.description
+         // this.email = res.data.user.email;
+         // this.dateCreated = moment(res.data.dateOfEntrance).format("DD/MM/YYYY");
+ $("label").addClass("active"); // will move the placeholder
+        })
+        .catch(error => {
+          console.log("loadApartmentInfo() :" + error);
+        });
+    },
+
+
+
     selectionChanged(params) {
       // for some reason it runs twice - block the second one.
       if (this.selectedLoopCounter > 1) {
@@ -327,9 +359,9 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
-
+    },   
     loadServiceInHandymanInBuildingInServiceCall() {
+      
       this.rows = [];
 
       let url = `ServiceInHandymanInBuildingInServiceCall/List?apartmentId=${this.apartmentId}`;
@@ -407,20 +439,19 @@ export default {
     this.serviceCallId = this.$route.params.serviceCallId;
     
     this.loadApartmentInfo();
-    
+    this.loadServiceInHandymanInBuildingInServiceCall();
+   
     
     if (this.serviceCallId != null) {
       this.isUpdateProcess = true;
     }
-    if (! this.isUpdateProcess) {
-      
-        this.loadServiceInHandymanInBuildingInServiceCall();
-        this.$store.commit("setInfoBarText", "פתח קריאת שירות");
-    }
-      else 
-    {
+
+    this.$store.commit("setInfoBarText", "פתח קריאת שירות");
+    if (this.isUpdateProcess) {             
         this.$store.commit("setInfoBarText", "עדכן קריאת שירות");
+         this.loadServiceCallInfo();
     }
+   
    
 
     $(".ProseMirror").text("");

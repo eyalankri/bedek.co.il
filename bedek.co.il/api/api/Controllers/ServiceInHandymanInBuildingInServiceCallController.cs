@@ -124,7 +124,7 @@ namespace api.Controllers
 
             serviceCallDto.Status = ServiceCallStatus.New.ToString();
             var entity = _mapper.Map<ServiceCall>(serviceCallDto);
-            
+
 
             if (!ModelState.IsValid) return BadRequest();
 
@@ -191,17 +191,17 @@ namespace api.Controllers
                 return BadRequest("הקובץ אינו נשמר!");
             }
 
-            
+
             serviceCallDto.FileName = fileName;
             serviceCallDto.FileContentType = contentType;
             serviceCallDto.ServiceCallId = serviceCallId;
-            
+
 
             try
             {
                 var doc = _mapper.Map<ServiceCallDoc>(serviceCallDto);
                 _db.Add(doc);
-              await  _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
 
 
                 return Ok(entity);
@@ -212,13 +212,36 @@ namespace api.Controllers
                 Console.WriteLine(e);
                 throw;
             }
-         
 
-            
-         
 
-            
 
+
+
+
+
+        }
+
+
+        [HttpGet]
+        [Route("Get")]
+        [EnableCors("MyPolicy")]
+        public async Task<ServiceCall> Get(Guid serviceCallId)
+        {
+
+            var serviceCall = await (from
+                    s in _db.ServiceCall
+                                     where s.ServiceCallId == serviceCallId
+                                     select new ServiceCall
+                                     {
+                                         Description = s.Description,
+                                         DateCreated = s.DateCreated,
+                                         DateUpdated = s.DateUpdated,
+                                         ServiceCallId = s.ServiceCallId,
+                                         Status = s.Status
+
+                                     }).FirstOrDefaultAsync();
+
+            return serviceCall;
         }
 
 
