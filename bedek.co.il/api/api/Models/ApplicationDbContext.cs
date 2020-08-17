@@ -87,7 +87,8 @@ namespace api.Models
                     UserId = firstAdminUserId,
                     FirstName = "Eyal",
                     LastName = "Ankri",
-                    Email = "eyal.ank@gmail.com",
+                    Email = "" +
+                            "eyal.ank@gmail.com",
                     Password = Encryption.Sha256($"5224287ea{salt}"),
                     Phone1 = "054-6680240",
                     IsAcceptEmails = false,

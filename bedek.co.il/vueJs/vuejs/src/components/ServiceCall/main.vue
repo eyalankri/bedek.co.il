@@ -42,6 +42,22 @@
       </div>
     </div>
 
+    <div>
+      <div class="container">
+        <div class="title-container hand" @click="toggleExpande('docs')">
+          <span class="title">מסמכים</span>
+          <i class="material-icons" v-if="expandMoreDocs">expand_more</i>
+          <i class="material-icons" v-if="!expandMoreDocs">expand_less</i>
+        </div>
+      </div>
+      <div v-show="expandMoreDocs">
+        <docs :propApartmentId="this.apartmentId" />
+      </div>
+    </div>
+
+
+
+
     <div class="row" v-if="this.serviceCallId">
       <div class="col s12 m6">
         <div class="file-field input-field">
